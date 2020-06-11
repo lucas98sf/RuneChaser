@@ -1,0 +1,23 @@
+fileFormatVersion: 2
+guid: 812203756d26c5646a082056b2976639
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - TreePrefab: {fileID: 4540993370381795313, guid: f2cd27dc3f0f18845ace9663df084589,
+      type: 3}
+  - IronVeinPrefab: {fileID: 3744710551132246587, guid: 4442144255ed8404bb80806434bc6057,
+      type: 3}
+  - GoldVeinPrefab: {fileID: 3924880164107237574, guid: addd723cb4636a2439a46273cb957c92,
+      type: 3}
+  - RockPrefab: {fileID: 2207539823699674639, guid: 83d0bb724ac2db94aa0e1822f19c6c2e,
+      type: 3}
+  - StickPrefab: {fileID: 5489552202293267392, guid: 97c30d53d5985444fa262080d9284508,
+      type: 3}
+  - EnemyPrefab: {fileID: 3139745112065909274, guid: ba87ad5f43364dd4a8d6a704ede3e6c1,
+      type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,0 +1,24 @@
+fileFormatVersion: 2
+guid: ee88c78e76a6b3740b3181921f6c6aa9
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - RockPrefab: {fileID: 2207539823699674639, guid: 83d0bb724ac2db94aa0e1822f19c6c2e,
+      type: 3}
+  - LogPrefab: {fileID: 926238010776090022, guid: ad71ee77069436b4d93e62de0e8ba8b0,
+      type: 3}
+  - PlankPrefab: {fileID: 4561059337352822861, guid: e9fe7597eba980449be4dc9d123c2ec6,
+      type: 3}
+  - GoldOrePrefab: {fileID: 3004435047904456507, guid: 54f255b55c7d59842aa450da36ad929d,
+      type: 3}
+  - IronOrePrefab: {fileID: 9022448801577578606, guid: d9be6fc7638db0d4db3d3eebc0f8756e,
+      type: 3}
+  - EnemyController: {instanceID: 0}
+  - DmgText: {fileID: -3455226882316139696, guid: e851d1b75188e0f41806926ced1651ff,
+      type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

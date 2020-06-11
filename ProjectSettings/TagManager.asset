@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - Axe
+  - Sword
+  - Log
+  - Plank
+  - Stick
+  - Tree
+  - WorkBench
+  - GoldOre
+  - GoldVein
+  - IronOre
+  - IronVein
+  - Pickaxe
+  - Rock
+  - Button
+  - Slot
+  - Enemy
+  - Bow
+  - Furnace
+  - Crystal
+  - GoldBar
+  - IronBar
+  - Anvil
+  - WoodenSword
+  - IronSword
+  - GoldenSword
+  - Stat
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - 
+  - Ground
+  - Trees
+  - Veins
+  - Enemies
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
