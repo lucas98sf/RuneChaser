@@ -7,6 +7,7 @@ using UnityEngine.EventSystems;
 public class PlayerController : MonoBehaviour
 {
   public Camera cam;
+
   [Header("Player Components")]
   Vector2 lookDir;
   public Rigidbody2D rb;
@@ -20,8 +21,10 @@ public class PlayerController : MonoBehaviour
   Transform slots;
   GameObject SelectedSlot;
   Animation anim;
+  public float FishTime;
   [Header("Prefabs")]
   public GameObject[] Prefabs;
+  public GameObject Caught;
   private GameObject Prefab;
   public GameObject Arrow;
   [Header("Targets")]
@@ -54,8 +57,10 @@ public class PlayerController : MonoBehaviour
   public float health;
   public float regen;
   public float regenquant = 1;
-  public float points;
-  public float level = 1;
+  public int level = 1;
+  public float points = 1;
+  public float baseexp;
+  public float exp;
   public float armor = 0;
   public float Resistance;
   public float CritChance;
@@ -65,6 +70,8 @@ public class PlayerController : MonoBehaviour
   private bool canScroll = true;
   private bool canAttack = true;
   private bool canBow = true;
+  private bool Fishing;
+  private bool hit;
   [HideInInspector] public bool canDash = true;
   [HideInInspector] public bool canDashWall = true;
   private int quant = 0;
@@ -77,9 +84,10 @@ public class PlayerController : MonoBehaviour
     righth = this.gameObject.transform.GetChild(1).GetChild(1).gameObject;
     lefth = this.gameObject.transform.GetChild(1).GetChild(0).gameObject;
     slots = GameObject.Find("GameHandler/Canvas/Inventory/Slots").transform;
+    baseexp = Mathf.RoundToInt(level * 1.2f * 32);
   }
 
-  IEnumerator AttackDelay(Collider2D target)
+  IEnumerator AttackDelay(Collider2D target, float damage)
   { //delay no ataque
     canAttack = false;
     yield return new WaitForSeconds(0.25f * (8.5f / (8.5f + agility)));
@@ -87,11 +95,11 @@ public class PlayerController : MonoBehaviour
     {
       if (Random.value <= CritChance)
       {
-        target.gameObject.GetComponent<HealthBar>().TakeDamage(SwordDamage * CritMult, true);
+        target.gameObject.GetComponent<HealthBar>().TakeDamage(damage * CritMult, true);
       }
       else
       {
-        target.gameObject.GetComponent<HealthBar>().TakeDamage(SwordDamage, false);
+        target.gameObject.GetComponent<HealthBar>().TakeDamage(damage, false);
       }
     }
     yield return new WaitForSeconds(0.4f * (8.5f / (8.5f + agility)));
@@ -132,6 +140,22 @@ public class PlayerController : MonoBehaviour
     canBow = true;
   }
 
+  IEnumerator Fish()
+  {
+    Fishing = true;
+    yield return new WaitForSeconds(Random.Range(3f, 10f));
+    Instantiate(Caught, gameObject.transform.position + new Vector3(0, 0.42f, 0), Quaternion.identity);
+    if (Input.GetMouseButton(0))
+    {
+      hit = true;
+      Fishing = false;
+    }
+    yield return new WaitForSeconds(FishTime);
+    hit = false;
+    anim["FishThrow"].enabled = false;
+    Fishing = false;
+  }
+
   IEnumerator DashDelay()
   {
     canDash = false;
@@ -153,15 +177,44 @@ public class PlayerController : MonoBehaviour
     float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg - 90f;
     rb.rotation = angle;
 
+    if (exp >= baseexp)
+    {
+      exp = Mathf.RoundToInt(exp - baseexp);
+      level++;
+      baseexp = Mathf.RoundToInt(level * 1.2f * 32);
+      points++;
+      if (level % 5 == 0)
+      {
+        points++;
+      }
+    }
+
     if (!canBow)
     { //slow ao atirar com o arco
       MoveSpeed = MoveSpeed * 0.75f;
     }
 
+    if (weapon.CompareTag("Rod"))
+    {
+      weapon.transform.GetChild(1).gameObject.SetActive(true);
+    }
+    else
+    {
+      weapon.transform.GetChild(1).gameObject.SetActive(false);
+    }
+
     //atributos (WIP)
     Resistance = 1 - (10 / (10 + armor));
-    SwordDamage = Mathf.RoundToInt((baseSwordDamage * (1 + strength * 0.03f)) + (strength * 1.2f));
-    BowDamage = Mathf.RoundToInt((baseBowDamage * (1 + (dexterity * 0.02f))) + (strength * 0.1f) + (dexterity * 0.8f));
+    SwordDamage = Mathf.RoundToInt((baseSwordDamage * (1 + strength * 0.13f)) + (strength * 1.2f));
+    if (weapon.CompareTag("IronSword"))
+    {
+      baseSwordDamage = 7;
+    }
+    if (weapon.CompareTag("GoldenSword"))
+    {
+      baseSwordDamage = 11;
+    }
+    BowDamage = Mathf.RoundToInt((baseBowDamage * (1 + (dexterity * 0.06f))) + (strength * 0.1f) + (dexterity * 0.8f));
     attackspeed = 1 / (8.5f / (8.5f + agility));
     foreach (AnimationState state in anim)
     {
@@ -192,26 +245,29 @@ public class PlayerController : MonoBehaviour
       weapon.tag = SelectedSlot.transform.GetChild(0).gameObject.tag;
     }
     //posição das mãos do personagem, conforme o item
-    if (!weapon.CompareTag("Untagged") && !weapon.CompareTag("GoldOre") && !weapon.CompareTag("IronOre") && !weapon.CompareTag("Rock") && !weapon.CompareTag("IronBar") && !weapon.CompareTag("GoldBar"))
+    if (!Fishing)
     {
-      righth.transform.localPosition = new Vector3(-1.75f, -1.25f, 0);
-    }
-    else
-    {
-      righth.transform.localPosition = new Vector3(4f, -2.5f, 0);
-    }
-    if (weapon.CompareTag("GoldOre") || weapon.CompareTag("IronOre") || weapon.CompareTag("Rock") || weapon.CompareTag("IronBar") || weapon.CompareTag("GoldBar"))
-    {
-      righth.transform.localPosition = new Vector3(1f, -1f, 0);
-    }
-    if (weapon.CompareTag("Bow"))
-    {
-      lefth.transform.localPosition = new Vector3(-3.2f, -0.5f, 0);
-      righth.transform.localPosition = new Vector3(1.75f, -3.75f, 0);
-    }
-    else
-    {
-      lefth.transform.localPosition = new Vector3(-4f, -2.5f, 0);
+      if (!weapon.CompareTag("Untagged") && !weapon.CompareTag("GoldOre") && !weapon.CompareTag("IronOre") && !weapon.CompareTag("Rock") && !weapon.CompareTag("IronBar") && !weapon.CompareTag("GoldBar"))
+      {
+        righth.transform.localPosition = new Vector3(-1.75f, -1.25f, 0);
+      }
+      else
+      {
+        righth.transform.localPosition = new Vector3(4f, -2.5f, 0);
+      }
+      if (weapon.CompareTag("GoldOre") || weapon.CompareTag("IronOre") || weapon.CompareTag("Rock") || weapon.CompareTag("IronBar") || weapon.CompareTag("GoldBar"))
+      {
+        righth.transform.localPosition = new Vector3(1f, -1f, 0);
+      }
+      if (weapon.CompareTag("Bow"))
+      {
+        lefth.transform.localPosition = new Vector3(-3.2f, -0.5f, 0);
+        righth.transform.localPosition = new Vector3(1.75f, -3.75f, 0);
+      }
+      else
+      {
+        lefth.transform.localPosition = new Vector3(-4f, -2.5f, 0);
+      }
     }
     //botão de ação somente quando não estiver clicando em um menu ou arrastando um item
     if (Input.GetMouseButton(0) && !EventSystem.current.IsPointerOverGameObject() && !GameHandler.Drag)
@@ -233,6 +289,15 @@ public class PlayerController : MonoBehaviour
             return;
           }
         }
+        Collider2D[] hitTarget2 = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, EnemyLayers);
+        foreach (Collider2D target in hitTarget2)
+        {
+          if (target != null && target.gameObject.CompareTag("Enemy"))
+          {
+            if (canAttack == true) { StartCoroutine(AttackDelay(target, 1 + AxeDamage + Mathf.RoundToInt(strength / 2))); }
+            return;
+          }
+        }
       }
       if (weapon.CompareTag(("Pickaxe")))
       {
@@ -246,6 +311,15 @@ public class PlayerController : MonoBehaviour
             return;
           }
         }
+        Collider2D[] hitTarget2 = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, EnemyLayers);
+        foreach (Collider2D target in hitTarget2)
+        {
+          if (target != null && target.gameObject.CompareTag("Enemy"))
+          {
+            if (canAttack == true) { StartCoroutine(AttackDelay(target, 1 + PickaxeDamage + Mathf.RoundToInt(strength / 2))); }
+            return;
+          }
+        }
       }
       if (weapon.CompareTag("WoodenSword") || weapon.CompareTag("IronSword") || weapon.CompareTag("GoldenSword"))
       {
@@ -255,7 +329,7 @@ public class PlayerController : MonoBehaviour
         {
           if (target != null && target.gameObject.CompareTag("Enemy"))
           {
-            if (canAttack == true) { StartCoroutine(AttackDelay(target)); }
+            if (canAttack == true) { StartCoroutine(AttackDelay(target, SwordDamage)); }
             return;
           }
         }
@@ -265,7 +339,6 @@ public class PlayerController : MonoBehaviour
         anim.Blend("Bow", 1f);
         if (canBow == true) { StartCoroutine(ShootBow()); }
       }
-
       if (weapon.CompareTag(("Untagged")))
       { //tentei alternar entre as mãos para socar mas tive problemas com o attack delay
         // if(LastPunch == null){
@@ -283,6 +356,36 @@ public class PlayerController : MonoBehaviour
         // }
         // }
         anim.Blend("Punch1", 1f);
+        Collider2D[] hitTarget = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, EnemyLayers);
+        foreach (Collider2D target in hitTarget)
+        {
+          if (target != null && target.gameObject.CompareTag("Enemy"))
+          {
+            if (canAttack == true) { StartCoroutine(AttackDelay(target, 1 + Mathf.RoundToInt(strength / 2))); }
+            return;
+          }
+        }
+      }
+    }
+    if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject() && !GameHandler.Drag)
+    {
+      if (weapon.CompareTag("Rod"))
+      {
+        if (Fishing)
+        {
+          Fishing = false;
+          anim.Blend("FishGrab", 1f);
+          if (hit)
+          {
+            Instantiate(Prefabs[5], gameObject.transform.position + new Vector3(0.2f, 0, 0), Quaternion.identity);
+          }
+        }
+        if (!Fishing)
+        {
+          anim.Blend("FishThrow", 1f);
+          StartCoroutine(Fish());
+        }
+        return;
       }
     }
     if ((gameObject.transform.position.x + (0.33f * dashrange)) > 99.5f || (gameObject.transform.position.x - (0.33f * dashrange)) < 0.5f || (gameObject.transform.position.y + (0.33f * dashrange)) > 99.5f || (gameObject.transform.position.y - (0.33f * dashrange)) < 0.5f)

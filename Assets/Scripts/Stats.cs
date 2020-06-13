@@ -13,7 +13,7 @@ public class Stats : MonoBehaviour
   GameObject Vigor;
   GameObject Dexterity;
   GameObject Swiftness;
-  public float points = 1;
+  public float points;
   public float strength;
   public float agility;
   public float vigor;
@@ -38,25 +38,13 @@ public class Stats : MonoBehaviour
   {
     if (Player != null)
     {
-      /*points = */
-      Player.GetComponent<PlayerController>().points = points;
-      /*strength = */
-      Player.GetComponent<PlayerController>().strength = strength;
-      /*agility = */
-      Player.GetComponent<PlayerController>().agility = agility;
-      /*vigor = */
-      Player.GetComponent<PlayerController>().vigor = vigor;
-      /*dexterity = */
-      Player.GetComponent<PlayerController>().dexterity = dexterity;
-      /*swiftness = */
-      Player.GetComponent<PlayerController>().swiftness = swiftness;
-      Points.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = points.ToString();
-      Strength.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = strength.ToString();
-      Agility.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = agility.ToString();
-      Vigor.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = vigor.ToString();
-      Dexterity.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = dexterity.ToString();
-      Swiftness.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = swiftness.ToString();
-      if (points < 1)
+      Points.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = player.points.ToString();
+      Strength.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = player.strength.ToString();
+      Agility.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = player.agility.ToString();
+      Vigor.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = player.vigor.ToString();
+      Dexterity.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = player.dexterity.ToString();
+      Swiftness.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = player.swiftness.ToString();
+      if (player.points < 1)
       {
         Strength.transform.GetChild(1).GetComponent<Button>().interactable = false;
         Agility.transform.GetChild(1).GetComponent<Button>().interactable = false;
@@ -75,7 +63,7 @@ public class Stats : MonoBehaviour
       Infos.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text = player.armor.ToString() + " (" + player.Resistance.ToString("0.00") + "% reduction)";
       Infos.transform.GetChild(1).GetChild(0).GetComponent<TextMeshProUGUI>().text = player.SwordDamage.ToString();
       Infos.transform.GetChild(2).GetChild(0).GetComponent<TextMeshProUGUI>().text = player.BowDamage.ToString();
-      Infos.transform.GetChild(3).GetChild(0).GetComponent<TextMeshProUGUI>().text = (player.attackspeed * 1.25f).ToString() + " melee | " + player.attackspeed.ToString() + " ranged";
+      Infos.transform.GetChild(3).GetChild(0).GetComponent<TextMeshProUGUI>().text = (player.attackspeed * 1.25f).ToString("0.00") + " melee | " + player.attackspeed.ToString("0.00") + " ranged";
       Infos.transform.GetChild(4).GetChild(0).GetComponent<TextMeshProUGUI>().text = player.health.ToString() + " (" + (player.health - player.basehealth - 2).ToString() + " extra)";
       Infos.transform.GetChild(5).GetChild(0).GetComponent<TextMeshProUGUI>().text = player.regenquant.ToString() + " each " + player.regen.ToString("0.00") + " sec";
       Infos.transform.GetChild(6).GetChild(0).GetComponent<TextMeshProUGUI>().text = (player.CritChance * 100).ToString() + "%";
@@ -89,32 +77,32 @@ public class Stats : MonoBehaviour
   public void IncreaseOnClick()
   {
     string statClicked = EventSystem.current.currentSelectedGameObject.transform.parent.name;
-    if (points >= 1)
+    if (player.points >= 1)
     {
-      points--;
+      player.points--;
       if (statClicked == "Strength")
       {
-        strength++;
+        player.strength++;
         EventSystem.current.GetComponent<EventSystem>().SetSelectedGameObject(null);
       }
       if (statClicked == "Agility")
       {
-        agility++;
+        player.agility++;
         EventSystem.current.GetComponent<EventSystem>().SetSelectedGameObject(null);
       }
       if (statClicked == "Vigor")
       {
-        vigor++;
+        player.vigor++;
         EventSystem.current.GetComponent<EventSystem>().SetSelectedGameObject(null);
       }
       if (statClicked == "Dexterity")
       {
-        dexterity++;
+        player.dexterity++;
         EventSystem.current.GetComponent<EventSystem>().SetSelectedGameObject(null);
       }
       if (statClicked == "Swiftness")
       {
-        swiftness++;
+        player.swiftness++;
         EventSystem.current.GetComponent<EventSystem>().SetSelectedGameObject(null);
       }
     }

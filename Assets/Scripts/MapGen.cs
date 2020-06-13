@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 public static class PoissonDiscSampling
-{ //esta parte do codigo retirei de (https://github.com/SebLague/Poisson-Disc-Sampling/blob/master/Poisson%20Disc%20Sampling%20E01/PoissonDiscSampling.cs), é um script que gera pontos em uma área de forma que eles não se repitam dentro de uma área ao redor deles, para evitar que árvores e entre outros fiquem muito próximos. (acredito que seria muito complicado para mim fazer isso sem o uso desse código, já que envolve conceitos mais avançados para mim, caso tenha algum problema em fazer isso, posso tentar alguma outra solução)
+{ //esta parte do codigo retirei de (https://github.com/SebLague/Poisson-Disc-Sampling/blob/master/Poisson%20Disc%20Sampling%20E01/PoissonDiscSampling.cs), é um script que gera pontos em uma área de forma que eles não se repitam dentro de uma área ao redor deles, para evitar que árvores e entre outros fiquem muito próximos.
 
   public static List<Vector2> GeneratePoints(float radius, Vector2 sampleRegionSize, int numSamplesBeforeRejection = 30)
   {
@@ -81,7 +81,7 @@ public class MapGen : MonoBehaviour
   public Vector2 regionSize;
   public int rejectionSamples = 30;
   List<Vector2> Points;
-  [Header("Trees and Veins")]
+  [Header("Trees, Veins and Lakes")]
   public float radiusSize;
   public GameObject TreePrefab;
   public float TreeChance;
@@ -89,6 +89,7 @@ public class MapGen : MonoBehaviour
   public float IronVeinChance;
   public GameObject GoldVeinPrefab;
   public float GoldVeinChance;
+  public GameObject[] LakePrefabs;
   List<Vector2> Points2;
   [Header("Rocks and Sticks")]
   public float radiusSize2;
@@ -104,7 +105,7 @@ public class MapGen : MonoBehaviour
 
   void Awake()
   {
-    Points = PoissonDiscSampling.GeneratePoints(radiusSize, regionSize - new Vector2(-1f, -1f), rejectionSamples); //árvores e minérios, com chances diferentes para cada
+    Points = PoissonDiscSampling.GeneratePoints(radiusSize, regionSize - new Vector2(-1f, -1f), rejectionSamples); //árvores minérios e lagos, com chances diferentes para cada
     Points2 = PoissonDiscSampling.GeneratePoints(radiusSize2, regionSize, rejectionSamples); //sticks e rocks
     EnemiesPoints = PoissonDiscSampling.GeneratePoints(radiusSizeEnemies, regionSize, rejectionSamples); //inimigos
 
@@ -114,21 +115,26 @@ public class MapGen : MonoBehaviour
       {
         if (point.x >= 1 && point.x <= 99 && point.y >= 1 && point.y <= 99)
         { //para não ficarem tão próximos à muralha
-          if (Random.value < TreeChance)
+          float chance = Random.value;
+          if (chance <= TreeChance)
           {
             Instantiate(TreePrefab, point, transform.rotation);
           }
           else
           {
-            if (Random.value < TreeChance + IronVeinChance)
+            if (chance <= TreeChance + IronVeinChance)
             {
               Instantiate(IronVeinPrefab, point, transform.rotation);
             }
             else
             {
-              if (Random.value < TreeChance + IronVeinChance + GoldVeinChance)
+              if (chance <= TreeChance + IronVeinChance + GoldVeinChance)
               {
                 Instantiate(GoldVeinPrefab, point, transform.rotation);
+              }
+              else
+              {
+                Instantiate(LakePrefabs[Random.Range(0, 3)], point, transform.rotation);
               }
             }
           }

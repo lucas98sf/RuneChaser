@@ -32,8 +32,11 @@ TextureImporter:
   - first:
       213: 7569684938147083892
     second: Weapons_9
+  - first:
+      213: 8789762969407134151
+    second: Weapons_5_0
   externalObjects: {}
-  serializedVersion: 10
+  serializedVersion: 11
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -87,6 +90,7 @@ TextureImporter:
   maxTextureSizeSet: 0
   compressionQualitySet: 0
   textureFormatSet: 0
+  applyGammaDecoding: 1
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
@@ -136,7 +140,7 @@ TextureImporter:
         width: 1024
         height: 1024
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -157,7 +161,7 @@ TextureImporter:
         width: 1024
         height: 1024
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -178,7 +182,7 @@ TextureImporter:
         width: 1024
         height: 1024
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -199,7 +203,7 @@ TextureImporter:
         width: 1024
         height: 1024
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -220,7 +224,7 @@ TextureImporter:
         width: 1024
         height: 1024
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -241,9 +245,21 @@ TextureImporter:
         width: 1024
         height: 1024
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
+      outline:
+      - - {x: -346.27603, y: -362.4397}
+        - {x: -408.30295, y: -356.41415}
+        - {x: -421.39047, y: -292.48865}
+        - {x: -374.2569, y: -224.3038}
+        - {x: 261.29858, y: 398.95203}
+        - {x: 348.09875, y: 424.07422}
+        - {x: 383.11804, y: 381.46484}
+        - {x: 381.39404, y: 362.00464}
+        - {x: 364.104, y: 344.19012}
+        - {x: 352.63654, y: 335.38397}
+        - {x: 339.8327, y: 324.68738}
+        - {x: -244.07565, y: -284.8295}
       physicsShape: []
       tessellationDetail: 0
       bones: []
@@ -262,7 +278,7 @@ TextureImporter:
         width: 1024
         height: 1024
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -283,7 +299,7 @@ TextureImporter:
         width: 1024
         height: 1024
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -304,7 +320,7 @@ TextureImporter:
         width: 1024
         height: 1024
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -325,7 +341,7 @@ TextureImporter:
         width: 1024
         height: 1024
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -333,6 +349,34 @@ TextureImporter:
       bones: []
       spriteID: a6441dd76f2aa5c4da6058f81780ec11
       internalID: 7569684938147083892
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Weapons_5_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 3
+        width: 1024
+        height: 1024
+      alignment: 9
+      pivot: {x: 0.8418515, y: 0.8253514}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 165.15839, y: -277.02295}
+        - {x: 188.11047, y: 4.9658813}
+        - {x: 340.15552, y: 325.88995}
+        - {x: 350.09692, y: 335.99738}
+        - {x: 360.01532, y: 341.71655}
+        - {x: 407.641, y: 360.82855}
+        - {x: 318.49988, y: -171.44336}
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7c9156bb9d28bf970800000000000000
+      internalID: 8789762969407134151
       vertices: []
       indices: 
       edges: []

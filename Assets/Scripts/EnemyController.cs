@@ -19,17 +19,27 @@ public class EnemyController : MonoBehaviour
   private Vector2 playerPos;
   private float DistToPlayer = 1;
   [Header("Enemy Stats")]
-  public float MoveSpeed = 0.5f;
-  public float attackRange = 0.12f;
-  public float damage;
-  public float health = 50;
+  public float baseMoveSpeed;
+  public float attackRange;
+  public float arrowSpeed;
+  public float basehealth;
+  public float baseregen;
   public float strength;
-  public float agility;//?
+  public float agility;
   public float vigor;
   public float dexterity;
   public float swiftness;
-  public static float CritChance;
-  public static float CritMult = 2f;
+  [Header("In Game")]
+  public float MoveSpeed;
+  public int damage;
+  public float attackspeed = 0;
+  public float health;
+  public float regen;
+  public float regenquant = 1;
+  public float armor = 0;
+  public float Resistance;
+  public float CritChance;
+  public float CritMult;
   public bool triggered;
   private bool canAttack = true;
 

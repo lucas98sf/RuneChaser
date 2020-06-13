@@ -19,9 +19,11 @@ public class HealthBar : MonoBehaviour
   public EnemyController EnemyController;
   private Transform location;
   public DmgText DmgText;
+  public GameObject Player;
 
   private void Start()
   {
+    Player = GameHandler.Player;
     if (gameObject.CompareTag("Enemy"))
     {
       health = EnemyController.health;
@@ -66,6 +68,7 @@ public class HealthBar : MonoBehaviour
         health = 0.01f;
         DestroyImmediate(gameObject.GetComponentInChildren<BoxCollider2D>());
         Destroy(gameObject.transform.parent.gameObject, 0.5f);
+        Player.GetComponent<PlayerController>().exp += Mathf.RoundToInt(Random.Range(1f, 2f) * 16);
       }
       else
       {
@@ -77,6 +80,7 @@ public class HealthBar : MonoBehaviour
       if (gameObject.CompareTag("Tree"))
       { //para nao ficar instanciando enquanto reproduz a animação
         Instantiate(LogPrefab, gameObject.transform.position, transform.rotation);
+        Player.GetComponent<PlayerController>().exp += Mathf.RoundToInt(Random.Range(1f, 2f) * 2);
         return;
       }
       if (gameObject.CompareTag("Log"))
@@ -98,6 +102,7 @@ public class HealthBar : MonoBehaviour
             Instantiate(RockPrefab, gameObject.transform.position + new Vector3(i / 10f, (Random.Range(0, 5)) / 10f, 0), transform.rotation);
           }
         }
+        Player.GetComponent<PlayerController>().exp += Mathf.RoundToInt(Random.Range(1f, 2f) * 16);
         return;
       }
       if (gameObject.CompareTag("IronVein"))
@@ -113,6 +118,7 @@ public class HealthBar : MonoBehaviour
             Instantiate(RockPrefab, gameObject.transform.position + new Vector3(i / 10f, (Random.Range(0, 5)) / 10f, 0), transform.rotation);
           }
         }
+        Player.GetComponent<PlayerController>().exp += Mathf.RoundToInt(Random.Range(1f, 2f) * 8);
         return;
       }
     }

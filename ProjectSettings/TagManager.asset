@@ -30,6 +30,7 @@ TagManager:
   - IronSword
   - GoldenSword
   - Stat
+  - Rod
   layers:
   - Default
   - TransparentFX
@@ -43,7 +44,7 @@ TagManager:
   - Trees
   - Veins
   - Enemies
-  - 
+  - Lakes
   - 
   - 
   - 

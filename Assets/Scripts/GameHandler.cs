@@ -25,6 +25,7 @@ public class GameHandler : MonoBehaviour
   public bool FullInventory = false;
   public CameraController CameraController;
   public PlayerHealthBar PlayerHealthBar;
+  public XPBar XPBar;
   public DashCD DashCD;
   public Stats Stats;
   public Arrow Arrow;
@@ -37,8 +38,10 @@ public class GameHandler : MonoBehaviour
   { //o player é instanciado aqui
     Time.timeScale = 1f;
     Player = Instantiate(PlayerPrefab);
+    Player.transform.SetSiblingIndex(0);
     CameraController.target = Player.transform;
     PlayerHealthBar.Player = Player;
+    XPBar.Player = Player;
     DashCD.Player = Player;
     Stats.Player = Player;
     Arrow.Player = Player;
