@@ -258,7 +258,7 @@ Transform:
   - {fileID: 4743948267015487871}
   m_Father: {fileID: 734591301940333690}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 16.757}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -22.903877}
 --- !u!212 &734591301783694331
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -298,8 +298,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 101
-  m_Sprite: {fileID: -8951780388439148649, guid: fc34a040c26b86a42a5622bd1af3b8b8,
-    type: 3}
+  m_Sprite: {fileID: -21522807587195298, guid: fc34a040c26b86a42a5622bd1af3b8b8, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -419,8 +418,8 @@ GameObject:
   m_Component:
   - component: {fileID: 734591301940333690}
   - component: {fileID: 734591301940333688}
-  - component: {fileID: 734591301940333691}
   - component: {fileID: 734591301940333694}
+  - component: {fileID: 734591301940333691}
   - component: {fileID: 734591301940333689}
   - component: {fileID: 155283254}
   m_Layer: 0
@@ -465,6 +464,7 @@ MonoBehaviour:
   attackPoint: {fileID: 734591301588107177}
   Dash: {fileID: 8086510537285539108, guid: 96a628969cc6c9f4d9e2567cee80f6c4, type: 3}
   FishTime: 0.8
+  FishText: {fileID: 972151807920448925, guid: 3a5f3139dddfbfe43823e06804943e50, type: 3}
   Prefabs:
   - {fileID: 4822015788812397674, guid: ecabcdd98b9d5974a89887e70b7d3005, type: 3}
   - {fileID: 977179950277609351, guid: 1ed2bc66d036c1549af3f05850d13f26, type: 3}
@@ -487,7 +487,6 @@ MonoBehaviour:
   - {fileID: 5243872438242788532, guid: 2bb95ddf204e2eb4e96935921072c213, type: 3}
   - {fileID: 5804620564246860620, guid: 4358818636827e7419e7f94728dcb487, type: 3}
   - {fileID: 8517182480397987053, guid: 5aa4a3568268f6b4190ba21822fe9927, type: 3}
-  Caught: {fileID: 6435844637761789884, guid: 5e66b21aef91ea944ac0a82de82e89c0, type: 3}
   Arrow: {fileID: 977179950277609351, guid: 1ed2bc66d036c1549af3f05850d13f26, type: 3}
   AxeTargetLayers:
     serializedVersion: 2
@@ -498,6 +497,9 @@ MonoBehaviour:
   EnemyLayers:
     serializedVersion: 2
     m_Bits: 2048
+  LakeLayers:
+    serializedVersion: 2
+    m_Bits: 4096
   baseMoveSpeed: 0.6
   attackRange: 0.12
   arrowSpeed: 2
@@ -530,27 +532,6 @@ MonoBehaviour:
   CritMult: 0
   canDash: 1
   canDashWall: 1
---- !u!50 &734591301940333691
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 734591301940333685}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 0
-  m_Material: {fileID: 0}
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 4
 --- !u!111 &734591301940333694
 Animation:
   m_ObjectHideFlags: 0
@@ -574,6 +555,27 @@ Animation:
   m_PlayAutomatically: 0
   m_AnimatePhysics: 0
   m_CullingType: 0
+--- !u!50 &734591301940333691
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 734591301940333685}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 4
 --- !u!58 &734591301940333689
 CircleCollider2D:
   m_ObjectHideFlags: 0

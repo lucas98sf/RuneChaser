@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using TMPro;
 
 public class PlayerController : MonoBehaviour
 {
@@ -22,15 +23,16 @@ public class PlayerController : MonoBehaviour
   GameObject SelectedSlot;
   Animation anim;
   public float FishTime;
+  public FishText FishText;
   [Header("Prefabs")]
   public GameObject[] Prefabs;
-  public GameObject Caught;
   private GameObject Prefab;
   public GameObject Arrow;
   [Header("Targets")]
   public LayerMask AxeTargetLayers;
   public LayerMask PickaxeTargetLayers;
   public LayerMask EnemyLayers;
+  public LayerMask LakeLayers;
   [Header("Player Stats")]
   public float baseMoveSpeed;
   public float attackRange;
@@ -90,7 +92,7 @@ public class PlayerController : MonoBehaviour
   IEnumerator AttackDelay(Collider2D target, float damage)
   { //delay no ataque
     canAttack = false;
-    yield return new WaitForSeconds(0.25f * (8.5f / (8.5f + agility)));
+    yield return new WaitForSeconds(0.25f * (1 / attackspeed));
     if (target != null)
     {
       if (Random.value <= CritChance)
@@ -102,19 +104,20 @@ public class PlayerController : MonoBehaviour
         target.gameObject.GetComponent<HealthBar>().TakeDamage(damage, false);
       }
     }
-    yield return new WaitForSeconds(0.4f * (8.5f / (8.5f + agility)));
+    target.GetComponent<Rigidbody2D>().AddForce((target.transform.position - gameObject.transform.position).normalized * (damage * 5));
+    yield return new WaitForSeconds(0.4f * (1 / attackspeed));
     canAttack = true;
   }
 
   IEnumerator AxePickDelay(Collider2D target)
   {
     canAxePick = false;
-    yield return new WaitForSeconds(0.25f * (8.5f / (8.5f + agility)));
+    yield return new WaitForSeconds(0.25f * (1 / attackspeed));
     if (target != null)
     {
       target.gameObject.GetComponent<Animation>().Play();
     }
-    yield return new WaitForSeconds(0.4f * (8.5f / (8.5f + agility)));
+    yield return new WaitForSeconds(0.4f * (1 / attackspeed));
     if (target != null)
     {
       if (weapon.CompareTag("Axe"))
@@ -132,28 +135,12 @@ public class PlayerController : MonoBehaviour
   IEnumerator ShootBow()
   {
     canBow = false;
-    yield return new WaitForSeconds(0.77f * (8.5f / (8.5f + agility)));
+    yield return new WaitForSeconds(0.77f * (1 / attackspeed));
     GameObject arrow = Instantiate(Arrow, attackPoint.position, attackPoint.rotation);
     Rigidbody2D arrowrb = arrow.GetComponent<Rigidbody2D>();
     arrowrb.AddForce(attackPoint.up * arrowSpeed, ForceMode2D.Impulse);
-    yield return new WaitForSeconds(0.1f * (8.5f / (8.5f + agility)));
+    yield return new WaitForSeconds(0.1f * (1 / attackspeed));
     canBow = true;
-  }
-
-  IEnumerator Fish()
-  {
-    Fishing = true;
-    yield return new WaitForSeconds(Random.Range(3f, 10f));
-    Instantiate(Caught, gameObject.transform.position + new Vector3(0, 0.42f, 0), Quaternion.identity);
-    if (Input.GetMouseButton(0))
-    {
-      hit = true;
-      Fishing = false;
-    }
-    yield return new WaitForSeconds(FishTime);
-    hit = false;
-    anim["FishThrow"].enabled = false;
-    Fishing = false;
   }
 
   IEnumerator DashDelay()
@@ -166,16 +153,19 @@ public class PlayerController : MonoBehaviour
   void FixedUpdate()
   {
     //simples movimentação e rotação conforme posição do mouse
-    movement.x = Input.GetAxisRaw("Horizontal");
-    movement.y = Input.GetAxisRaw("Vertical");
+    if (!Fishing)
+    {
+      movement.x = Input.GetAxisRaw("Horizontal");
+      movement.y = Input.GetAxisRaw("Vertical");
 
-    mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
+      mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
 
-    rb.MovePosition(rb.position + movement.normalized * MoveSpeed * Time.fixedDeltaTime);
+      rb.MovePosition(rb.position + movement.normalized * MoveSpeed * Time.fixedDeltaTime);
 
-    lookDir = mousePos - rb.position;
-    float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg - 90f;
-    rb.rotation = angle;
+      lookDir = mousePos - rb.position;
+      float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg - 90f;
+      rb.rotation = angle;
+    }
 
     if (exp >= baseexp)
     {
@@ -367,27 +357,6 @@ public class PlayerController : MonoBehaviour
         }
       }
     }
-    if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject() && !GameHandler.Drag)
-    {
-      if (weapon.CompareTag("Rod"))
-      {
-        if (Fishing)
-        {
-          Fishing = false;
-          anim.Blend("FishGrab", 1f);
-          if (hit)
-          {
-            Instantiate(Prefabs[5], gameObject.transform.position + new Vector3(0.2f, 0, 0), Quaternion.identity);
-          }
-        }
-        if (!Fishing)
-        {
-          anim.Blend("FishThrow", 1f);
-          StartCoroutine(Fish());
-        }
-        return;
-      }
-    }
     if ((gameObject.transform.position.x + (0.33f * dashrange)) > 99.5f || (gameObject.transform.position.x - (0.33f * dashrange)) < 0.5f || (gameObject.transform.position.y + (0.33f * dashrange)) > 99.5f || (gameObject.transform.position.y - (0.33f * dashrange)) < 0.5f)
     {
       canDashWall = false;
@@ -456,85 +425,149 @@ public class PlayerController : MonoBehaviour
   }
   void Update()
   { //drop de itens (atualmente no botão direito, mas se houver alguma ferramenta com uso secundario mudarei para o Q), pressionar shift faz com que drope enquanto o botão esteja pressionado
-    if ((Input.GetMouseButtonDown(1)) && !EventSystem.current.IsPointerOverGameObject() && canDrop ||
-    (Input.GetMouseButton(1)) && (Input.GetKey(KeyCode.LeftShift)) && !EventSystem.current.IsPointerOverGameObject() && canDrop)
+    if (!Fishing)
     {
-      canDrop = false;
-      if (!weapon.CompareTag("Untagged"))
+      if ((Input.GetMouseButtonDown(1)) && !EventSystem.current.IsPointerOverGameObject() && canDrop ||
+      (Input.GetMouseButton(1)) && (Input.GetKey(KeyCode.LeftShift)) && !EventSystem.current.IsPointerOverGameObject() && canDrop)
       {
-        foreach (GameObject prefab in Prefabs)
+        canDrop = false;
+        if (!weapon.CompareTag("Untagged"))
         {
-          if (weapon.CompareTag(prefab.tag))
+          foreach (GameObject prefab in Prefabs)
           {
-            Prefab = prefab;
-            break;
+            if (weapon.CompareTag(prefab.tag))
+            {
+              Prefab = prefab;
+              break;
+            }
           }
+          Instantiate(Prefab, attackPoint.position, Quaternion.identity);
+          SelectedSlot.transform.GetComponent<InventorySlot>().ItemCount--;
+          //ClearSelected();
         }
-        Instantiate(Prefab, attackPoint.position, Quaternion.identity);
-        SelectedSlot.transform.GetComponent<InventorySlot>().ItemCount--;
-        //ClearSelected();
+        canDrop = true;
+        return;
       }
-      canDrop = true;
-      return;
+      if (Input.GetKeyDown(KeyCode.Alpha1))
+      { //teclas numerais para selecionar itens do inventário
+        Inventory(1);
+      }
+      if (Input.GetKeyDown(KeyCode.Alpha2))
+      {
+        Inventory(2);
+      }
+      if (Input.GetKeyDown(KeyCode.Alpha3))
+      {
+        Inventory(3);
+      }
+      if (Input.GetKeyDown(KeyCode.Alpha4))
+      {
+        Inventory(4);
+      }
+      if (Input.GetKeyDown(KeyCode.Alpha5))
+      {
+        Inventory(5);
+      }
+      if (Input.GetKeyDown(KeyCode.Alpha6))
+      {
+        Inventory(6);
+      }
+      if (Input.GetKeyDown(KeyCode.Alpha7))
+      {
+        Inventory(7);
+      }
+      if (Input.GetKeyDown(KeyCode.Alpha8))
+      {
+        Inventory(8);
+      }
+      if (Input.GetKeyDown(KeyCode.Alpha9))
+      {
+        Inventory(9);
+      }
+      if (Input.GetAxis("Mouse ScrollWheel") > 0f && canScroll && !EventSystem.current.IsPointerOverGameObject())
+      {  //scroll para selecionar itens do inventário
+        canScroll = false;
+        if (quant < 9)
+        {
+          quant++;
+        }
+        else { quant = 1; }
+        Inventory(quant);
+        canScroll = true;
+      }
+      if (Input.GetAxis("Mouse ScrollWheel") < 0f && canScroll && !EventSystem.current.IsPointerOverGameObject())
+      {
+        canScroll = false;
+        if (quant > 1)
+        {
+          quant--;
+        }
+        else { quant = 9; }
+        Inventory(quant);
+        canScroll = true;
+      }
     }
 
-    if (Input.GetKeyDown(KeyCode.Alpha1))
-    { //teclas numerais para selecionar itens do inventário
-      Inventory(1);
-    }
-    if (Input.GetKeyDown(KeyCode.Alpha2))
+    if (!weapon.CompareTag("Rod"))
     {
-      Inventory(2);
+      Fishing = false;
     }
-    if (Input.GetKeyDown(KeyCode.Alpha3))
+    if (!Fishing && weapon.CompareTag("Rod"))
     {
-      Inventory(3);
-    }
-    if (Input.GetKeyDown(KeyCode.Alpha4))
-    {
-      Inventory(4);
-    }
-    if (Input.GetKeyDown(KeyCode.Alpha5))
-    {
-      Inventory(5);
-    }
-    if (Input.GetKeyDown(KeyCode.Alpha6))
-    {
-      Inventory(6);
-    }
-    if (Input.GetKeyDown(KeyCode.Alpha7))
-    {
-      Inventory(7);
-    }
-    if (Input.GetKeyDown(KeyCode.Alpha8))
-    {
-      Inventory(8);
-    }
-    if (Input.GetKeyDown(KeyCode.Alpha9))
-    {
-      Inventory(9);
-    }
-    if (Input.GetAxis("Mouse ScrollWheel") > 0f && canScroll && !EventSystem.current.IsPointerOverGameObject())
-    {  //scroll para selecionar itens do inventário
-      canScroll = false;
-      if (quant < 9)
+      StopAllCoroutines();
+      if (!canDash)
       {
-        quant++;
+        StartCoroutine(DashDelay());
       }
-      else { quant = 1; }
-      Inventory(quant);
-      canScroll = true;
     }
-    if (Input.GetAxis("Mouse ScrollWheel") < 0f && canScroll && !EventSystem.current.IsPointerOverGameObject())
+    if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject() && !GameHandler.Drag)
     {
-      canScroll = false;
-      if (quant > 1)
+      if (weapon.CompareTag("Rod"))
       {
-        quant--;
+        Collider2D[] hitLake = Physics2D.OverlapCircleAll(transform.TransformPoint(attackPoint.localPosition + new Vector3(0.02f, 0.25f, 0)), 0.02f, LakeLayers);//posicao do anzol
+        if (hitLake.Length > 0)
+        {
+          if (!Fishing && !anim.isPlaying)
+          {
+            anim.Blend("FishThrow", 1f);
+            Fishing = true;
+            StartCoroutine(Fish());
+            return;
+          }
+          if (Fishing && !anim.isPlaying)
+          {
+            anim.Blend("FishGrab", 1f);
+            Fishing = false;
+            if (hit)
+            {
+              FishText.ShowText(gameObject, ":)", Color.green);
+              Instantiate(Prefabs[5], gameObject.transform.position + new Vector3(0.2f, 0, 0), Quaternion.identity);
+            }
+            else
+            {
+              FishText.ShowText(gameObject, ":(", Color.red);
+            }
+            return;
+          }
+        }
       }
-      else { quant = 9; }
-      Inventory(quant);
-      canScroll = true;
+    }
+  }
+
+  IEnumerator Fish()
+  {
+    while (Fishing)
+    {
+      yield return new WaitForSeconds(Random.Range(3f, 10f));
+      if (Fishing)
+      {
+        FishText.ShowText(gameObject, "!", Color.yellow);
+        hit = true;
+        yield return new WaitForSeconds(FishTime);
+        hit = false;
+        StartCoroutine(Fish());
+      }
+      yield break;
     }
   }
 

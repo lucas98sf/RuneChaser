@@ -124,6 +124,7 @@ public class EnemyController : MonoBehaviour
         PlayerHealthBar.GetComponent<PlayerHealthBar>().TakeDamage(damage, false);
       }
     }
+    target.GetComponent<Rigidbody2D>().AddForce((target.transform.position - gameObject.transform.position).normalized * (damage * 5));
     yield return new WaitForSeconds(0.3f);
     canAttack = true;
   }

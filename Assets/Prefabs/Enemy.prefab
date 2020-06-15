@@ -212,16 +212,26 @@ MonoBehaviour:
   Player: {fileID: 734591301940333685, guid: 9362dfe8fe1d80a449cea73714a4de67, type: 3}
   PlayerHealthBar: {fileID: 7265838733847150786, guid: dd7b6916c1636224ebf67cb21c831a03,
     type: 3}
-  DistToPlayer: 1.2
-  MoveSpeed: 0.55
+  baseMoveSpeed: 0
   attackRange: 0.12
-  damage: 7
-  health: 78
+  arrowSpeed: 0
+  basehealth: 0
+  baseregen: 0
   strength: 0
   agility: 0
   vigor: 0
   dexterity: 0
   swiftness: 0
+  MoveSpeed: 0.55
+  damage: 7
+  attackspeed: 0
+  health: 78
+  regen: 0
+  regenquant: 1
+  armor: 0
+  Resistance: 0
+  CritChance: 0
+  CritMult: 0
   triggered: 0
 --- !u!114 &6582290905527882478
 MonoBehaviour:
@@ -248,6 +258,7 @@ MonoBehaviour:
   EnemyController: {fileID: 7347107063366692266}
   DmgText: {fileID: -3455226882316139696, guid: e851d1b75188e0f41806926ced1651ff,
     type: 3}
+  Player: {fileID: 0}
 --- !u!58 &7347107063366692257
 CircleCollider2D:
   m_ObjectHideFlags: 0
