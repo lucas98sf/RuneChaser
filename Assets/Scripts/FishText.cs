@@ -6,6 +6,7 @@ using TMPro;
 public class FishText : MonoBehaviour
 {
   public TextMeshPro text;
+  [HideInInspector]
   public GameObject Player;
   void Start()
   {

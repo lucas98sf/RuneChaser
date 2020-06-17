@@ -5,16 +5,9 @@ MonoImporter:
   serializedVersion: 2
   defaultReferences:
   - Player: {fileID: 734591301940333685, guid: 9362dfe8fe1d80a449cea73714a4de67, type: 3}
-  - StoneAxePrefab: {fileID: 8233318092136425271, guid: 79c5684705c4b074382916c943ed9217,
+  - craftbutton: {fileID: 2987529490160723329, guid: 068bbb2a82b2c6e459bb59c285ed92db,
       type: 3}
-  - StonePickaxePrefab: {fileID: 8018902021032612287, guid: 89cb675fa27969a439d7e35215317c3b,
-      type: 3}
-  - WorkBenchPrefab: {fileID: 8517182480397987053, guid: 5aa4a3568268f6b4190ba21822fe9927,
-      type: 3}
-  - StickPrefab: {fileID: 5489552202293267392, guid: 97c30d53d5985444fa262080d9284508,
-      type: 3}
-  - WoodenSwordPrefab: {fileID: 5804620564246860620, guid: 4358818636827e7419e7f94728dcb487,
-      type: 3}
+  - weapon: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

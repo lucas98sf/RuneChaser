@@ -8,9 +8,9 @@ public class HealthBar : MonoBehaviour
 {
   private Transform bar;
   private TextMeshProUGUI text;
-  public float health = 5f;
+  public float health = 5;
   private float startingHealth;
-  private float percHealth = 1f;
+  private float percHealth = 1;
   public GameObject RockPrefab;
   public GameObject LogPrefab;
   public GameObject PlankPrefab;
@@ -40,17 +40,17 @@ public class HealthBar : MonoBehaviour
   }
   void OnMouseEnter()
   { //mostra as barras de vida apenas ao passar o mouse
-    location.transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().color += new Color(0, 0, 0, 255f);
-    location.transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>().color += new Color(0, 0, 0, 255f);
-    location.transform.GetChild(2).transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().color += new Color(0, 0, 0, 255f);
+    location.transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().color += new Color(0, 0, 0, 255);
+    location.transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>().color += new Color(0, 0, 0, 255);
+    location.transform.GetChild(2).transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().color += new Color(0, 0, 0, 255);
     location.transform.GetChild(3).gameObject.SetActive(true);
   }
 
   void OnMouseExit()
   {
-    location.transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().color -= new Color(0, 0, 0, 255f);
-    location.transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>().color -= new Color(0, 0, 0, 255f);
-    location.transform.GetChild(2).transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().color -= new Color(0, 0, 0, 255f);
+    location.transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().color -= new Color(0, 0, 0, 255);
+    location.transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>().color -= new Color(0, 0, 0, 255);
+    location.transform.GetChild(2).transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().color -= new Color(0, 0, 0, 255);
     location.transform.GetChild(3).gameObject.SetActive(false);
   }
 
@@ -58,13 +58,13 @@ public class HealthBar : MonoBehaviour
   {
     if (health <= 0)
     {
-      location.transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().color -= new Color(0, 0, 0, 255f);
-      location.transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>().color -= new Color(0, 0, 0, 255f);
-      location.transform.GetChild(2).transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().color -= new Color(0, 0, 0, 255f);
+      location.transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().color -= new Color(0, 0, 0, 255);
+      location.transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>().color -= new Color(0, 0, 0, 255);
+      location.transform.GetChild(2).transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().color -= new Color(0, 0, 0, 255);
       location.transform.GetChild(3).gameObject.SetActive(false);
       if (gameObject.CompareTag("Enemy"))
       {
-        gameObject.GetComponent<Animation>().Blend("EnemyDead", 1.0F, 0F);
+        gameObject.GetComponent<Animation>().Blend("EnemyDead", 1, 0);
         health = 0.01f;
         DestroyImmediate(gameObject.GetComponentInChildren<BoxCollider2D>());
         Destroy(gameObject.transform.parent.gameObject, 0.5f);
@@ -72,7 +72,7 @@ public class HealthBar : MonoBehaviour
       }
       else
       {
-        gameObject.GetComponent<Animation>().Blend("Dead", 1.0F, 0F);
+        gameObject.GetComponent<Animation>().Blend("Dead", 1, 0);
         health = 0.01f;
         DestroyImmediate(gameObject.GetComponent<BoxCollider2D>());
         Destroy(gameObject, 0.33f);
@@ -95,11 +95,11 @@ public class HealthBar : MonoBehaviour
         { //quantidade aleatória
           if (i % 2 > 0)
           { //dividir entre minério e pedras
-            Instantiate(GoldOrePrefab, gameObject.transform.position + new Vector3(i / 10f, (Random.Range(0, 5)) / 10f, 0), transform.rotation); //locais diferentes
+            Instantiate(GoldOrePrefab, gameObject.transform.position + new Vector3(i / 10, (Random.Range(0, 5)) / 10, 0), transform.rotation); //locais diferentes
           }
           else
           {
-            Instantiate(RockPrefab, gameObject.transform.position + new Vector3(i / 10f, (Random.Range(0, 5)) / 10f, 0), transform.rotation);
+            Instantiate(RockPrefab, gameObject.transform.position + new Vector3(i / 10, (Random.Range(0, 5)) / 10, 0), transform.rotation);
           }
         }
         Player.GetComponent<PlayerController>().exp += Mathf.RoundToInt(Random.Range(1f, 2f) * 16);
@@ -111,11 +111,11 @@ public class HealthBar : MonoBehaviour
         {
           if (i % 2 > 0)
           {
-            Instantiate(IronOrePrefab, gameObject.transform.position + new Vector3(i / 10f, (Random.Range(0, 5)) / 10f, 0), transform.rotation);
+            Instantiate(IronOrePrefab, gameObject.transform.position + new Vector3(i / 10, (Random.Range(0, 5)) / 10, 0), transform.rotation);
           }
           else
           {
-            Instantiate(RockPrefab, gameObject.transform.position + new Vector3(i / 10f, (Random.Range(0, 5)) / 10f, 0), transform.rotation);
+            Instantiate(RockPrefab, gameObject.transform.position + new Vector3(i / 10, (Random.Range(0, 5)) / 10, 0), transform.rotation);
           }
         }
         Player.GetComponent<PlayerController>().exp += Mathf.RoundToInt(Random.Range(1f, 2f) * 8);
@@ -130,14 +130,14 @@ public class HealthBar : MonoBehaviour
     {
       DmgText.ShowText(transform.position, Mathf.RoundToInt(damage).ToString(), false, crit);
       EnemyController.triggered = true;
-      gameObject.GetComponent<Animation>().Blend("GetHit", 1.0F, 0F);
+      gameObject.GetComponent<Animation>().Blend("GetHit", 1, 0);
     }
     if (health > 0.01f)
     {
       health -= Mathf.RoundToInt(damage);
     }
     percHealth = health / startingHealth;
-    bar.localScale = new Vector3(percHealth, 1f);
+    bar.localScale = new Vector3(percHealth, 1);
     text.text = health.ToString() + "/" + startingHealth.ToString();
   }
 }

@@ -27,6 +27,6 @@ public class XPBar : MonoBehaviour
     }
     text.text = level.ToString();
     percXP = exp / baseexp;
-    bar.localScale = new Vector3(percXP, 1f);
+    bar.localScale = new Vector3(percXP, 1);
   }
 }

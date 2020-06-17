@@ -72,19 +72,19 @@ public class EnemyController : MonoBehaviour
     }
     if (DistToPlayer <= 0.3f)
     {
-      MoveSpeed = 0f;
+      MoveSpeed = 0;
       AttackPlayer(); //ataca o player quando em distancia suficiente
     }
     else
     {
       MoveSpeed = startingMoveSpeed;
     }
-    if (DistToPlayer <= 3f && triggered)
+    if (DistToPlayer <= 3 && triggered)
     {
       transform.position = Vector2.MoveTowards(transform.position, Player.transform.position, step);
       playerPos = Player.transform.position;
       Vector2 lookDir = playerPos - rb.position;
-      float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg - 90f;
+      float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg - 90;
       rb.rotation = angle;
     }
     else
@@ -97,7 +97,7 @@ public class EnemyController : MonoBehaviour
 
   void AttackPlayer()
   {
-    anim.Blend("Sword", 1f);
+    anim.Blend("Sword", 1);
     Collider2D[] hitTarget = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, PlayerLayer);
     foreach (Collider2D target in hitTarget)
     {

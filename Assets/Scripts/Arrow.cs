@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Arrow : MonoBehaviour
 {
+  [HideInInspector]
   public GameObject Player;
   void OnCollisionEnter2D(Collision2D other)
   { //causa dano ao acertar, com chance de critico

@@ -8,6 +8,7 @@ public class DmgText : MonoBehaviour
   public float duration;
   public float speed;
   public TextMeshPro text;
+  [HideInInspector]
   public GameObject Player;
 
   void Start()
@@ -17,7 +18,7 @@ public class DmgText : MonoBehaviour
   }
   void Update() // texto de dano, com cores diferentes para player e enemy, e também em criticos
   {
-    transform.position += new Vector3(0f, speed, 0f);
+    transform.position += new Vector3(0, speed, 0);
     speed = 0.003f * (1 + Player.GetComponent<PlayerController>().attackspeed);
     GetComponent<TextMeshPro>().color -= new Color(0, 0, 0, 0.02f);
     Destroy(gameObject, duration); //duração determinada no inspector

@@ -20,7 +20,7 @@ public class FadingSprite : MonoBehaviour
     if (!other.isTrigger)
     {
       Color tmp = gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().color;
-      tmp.a = 1f;
+      tmp.a = 1;
       gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().color = tmp;
       gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().sortingOrder = 90;
     }

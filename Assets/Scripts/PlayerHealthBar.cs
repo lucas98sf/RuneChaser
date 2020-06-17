@@ -7,12 +7,13 @@ public class PlayerHealthBar : MonoBehaviour
 {
   private Transform bar;
   private TextMeshProUGUI text;
+  [HideInInspector]
   public GameObject Player;
   private float startingHealth;
   private float health;
   private float regen;
   private float regenquant;
-  private float percHealth = 1f;
+  private float percHealth = 1;
   public DmgText DmgText;
   private float timer = 0;
   void Start()
@@ -37,10 +38,10 @@ public class PlayerHealthBar : MonoBehaviour
     text.text = health.ToString() + "/" + startingHealth.ToString();
     if (startingHealth != 0)
     {
-      bar.localScale = new Vector3(percHealth, 1f);
+      bar.localScale = new Vector3(percHealth, 1);
     }
 
-    if (percHealth < 1f)
+    if (percHealth < 1)
     {
       timer += Time.deltaTime;
       if (timer > regen)
@@ -74,7 +75,7 @@ public class PlayerHealthBar : MonoBehaviour
   }
   public void TakeDamage(float damage, bool crit)
   { //dano ao player
-    Player.GetComponent<Animation>().Blend("GetHit", 1.0F, 0F);
+    Player.GetComponent<Animation>().Blend("GetHit", 1, 0);
     health -= Mathf.RoundToInt(damage);
     DmgText.ShowText(Player.transform.position, Mathf.RoundToInt(damage).ToString(), true, crit);
   }

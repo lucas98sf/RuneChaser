@@ -105,7 +105,7 @@ public class MapGen : MonoBehaviour
 
   void Awake()
   {
-    Points = PoissonDiscSampling.GeneratePoints(radiusSize, regionSize - new Vector2(-1f, -1f), rejectionSamples); //árvores minérios e lagos, com chances diferentes para cada
+    Points = PoissonDiscSampling.GeneratePoints(radiusSize, regionSize - new Vector2(-1, -1), rejectionSamples); //árvores minérios e lagos, com chances diferentes para cada
     Points2 = PoissonDiscSampling.GeneratePoints(radiusSize2, regionSize, rejectionSamples); //sticks e rocks
     EnemiesPoints = PoissonDiscSampling.GeneratePoints(radiusSizeEnemies, regionSize, rejectionSamples); //inimigos
 

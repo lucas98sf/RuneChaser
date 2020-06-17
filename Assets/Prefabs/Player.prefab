@@ -220,7 +220,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 2.55, y: 2.55}
+  m_Size: {x: 10.18, y: 10.18}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -298,7 +298,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 101
-  m_Sprite: {fileID: -21522807587195298, guid: fc34a040c26b86a42a5622bd1af3b8b8, type: 3}
+  m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -306,7 +306,7 @@ SpriteRenderer:
   m_Size: {x: 0.33333334, y: 0.33333334}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &734591301881899755
@@ -459,24 +459,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e120e3262a74b547a5c4bf0b67fe57a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cam: {fileID: 0}
   rb: {fileID: 734591301940333691}
   attackPoint: {fileID: 734591301588107177}
   Dash: {fileID: 8086510537285539108, guid: 96a628969cc6c9f4d9e2567cee80f6c4, type: 3}
-  FishTime: 0.8
+  FishTime: 0.35
   FishText: {fileID: 972151807920448925, guid: 3a5f3139dddfbfe43823e06804943e50, type: 3}
   Prefabs:
   - {fileID: 4822015788812397674, guid: ecabcdd98b9d5974a89887e70b7d3005, type: 3}
-  - {fileID: 977179950277609351, guid: 1ed2bc66d036c1549af3f05850d13f26, type: 3}
+  - {fileID: 6395767964384294878, guid: 48b701f8341b4764d951e8910a2e4ec9, type: 3}
   - {fileID: 4073824185620130838, guid: f288565da253e7042b46d83ec9198f78, type: 3}
   - {fileID: 1644965363000987977, guid: 102946c2f7dc8a54c85891d92d538eda, type: 3}
   - {fileID: 457388398922511363, guid: 82e261be2f35b3a46b32c202041496d0, type: 3}
   - {fileID: 3004435047904456507, guid: 54f255b55c7d59842aa450da36ad929d, type: 3}
-  - {fileID: 3924880164107237574, guid: addd723cb4636a2439a46273cb957c92, type: 3}
   - {fileID: 5330110692582531258, guid: 93bdc1b088d6e3447af160ceaccfb245, type: 3}
   - {fileID: 9022448801577578606, guid: d9be6fc7638db0d4db3d3eebc0f8756e, type: 3}
   - {fileID: 4947518167239023741, guid: 7ce3094a45cbee24181588261f2c780f, type: 3}
-  - {fileID: 3744710551132246587, guid: 4442144255ed8404bb80806434bc6057, type: 3}
   - {fileID: 4561059337352822861, guid: e9fe7597eba980449be4dc9d123c2ec6, type: 3}
   - {fileID: 926238010776090022, guid: ad71ee77069436b4d93e62de0e8ba8b0, type: 3}
   - {fileID: 2207539823699674639, guid: 83d0bb724ac2db94aa0e1822f19c6c2e, type: 3}
@@ -487,7 +484,7 @@ MonoBehaviour:
   - {fileID: 5243872438242788532, guid: 2bb95ddf204e2eb4e96935921072c213, type: 3}
   - {fileID: 5804620564246860620, guid: 4358818636827e7419e7f94728dcb487, type: 3}
   - {fileID: 8517182480397987053, guid: 5aa4a3568268f6b4190ba21822fe9927, type: 3}
-  Arrow: {fileID: 977179950277609351, guid: 1ed2bc66d036c1549af3f05850d13f26, type: 3}
+  Arrow: {fileID: 977179950277609351, guid: a8f49278a181f38409573e132caf79f8, type: 3}
   AxeTargetLayers:
     serializedVersion: 2
     m_Bits: 512

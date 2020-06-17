@@ -8,27 +8,34 @@ using UnityEngine.SceneManagement;
 using UnityEditor;
 public class GameHandler : MonoBehaviour
 {
+  [HideInInspector]
+  public Camera cam;
   public GameObject PlayerPrefab;
   public static GameObject Player;
   private bool activeCraft = false;
   private bool activeStats = false;
   private string SelectedObjectMessage;
+  [HideInInspector]
   public GUIStyle SelectedObjectStyle;
-  public string message;
-  bool msg;
+  bool message;
+  string messageText;
+  public GUIStyle messageStyle;
   public Texture2D backg;
   private Vector2 worldPoint;
   Transform slots;
   public static bool Drag = false;
-  public Transform SlotClicked;
-  public Transform SlotUnderMouse;
-  public bool FullInventory = false;
+  private Transform SlotClicked;
+  private Transform SlotUnderMouse;
+  private bool StatUnderMouse;
+  //public bool FullInventory = false;
   public CameraController CameraController;
   public PlayerHealthBar PlayerHealthBar;
-  public XPBar XPBar;
   public DashCD DashCD;
+  public XPBar XPBar;
   public Stats Stats;
   public Arrow Arrow;
+  public Craft Craft;
+  public static GameObject menu;
 
   // public int treesQuant;
   // public int ironveinsQuant;
@@ -36,7 +43,7 @@ public class GameHandler : MonoBehaviour
 
   void Awake()
   { //o player é instanciado aqui
-    Time.timeScale = 1f;
+    Time.timeScale = 1;
     Player = Instantiate(PlayerPrefab);
     Player.transform.SetSiblingIndex(0);
     CameraController.target = Player.transform;
@@ -45,16 +52,22 @@ public class GameHandler : MonoBehaviour
     DashCD.Player = Player;
     Stats.Player = Player;
     Arrow.Player = Player;
-  }
-  void Start()
-  {
+    Craft.Player = Player;
     slots = GameObject.Find("GameHandler/Canvas/Inventory/Slots").transform;
+    cam = Camera.main;
   }
+  
   void Update()
   {
+    if (EventSystem.current.currentSelectedGameObject != null && EventSystem.current.currentSelectedGameObject.name == "Scrollbar")
+    {
+      EventSystem.current.SetSelectedGameObject(null);
+    }
+
     if (Input.GetKeyDown(KeyCode.Escape))
-    { //menu, ainda sem salvar a scene ao apertar
-      SceneManager.LoadScene("Main Menu");
+    { //menu
+      cam.GetComponent<AudioListener>().enabled = false;
+      menu.SetActive(true);
     }
 
     foreach (Transform child in slots)
@@ -140,6 +153,7 @@ public class GameHandler : MonoBehaviour
         }
         if (result.isValid && result.gameObject.CompareTag("Stat"))
         { //informações dos stats
+          StatUnderMouse = true;
           if (result.gameObject.name == "Points")
           {
             SelectedObjectMessage = "Earn 1 for each level +1 bonus point for each 5 levels";
@@ -206,6 +220,7 @@ public class GameHandler : MonoBehaviour
         }
         if (result.isValid == false)
         {
+          StatUnderMouse = false;
           SelectedObjectMessage = null;
           SelectedObjectStyle.normal.background = null;
         }
@@ -213,6 +228,7 @@ public class GameHandler : MonoBehaviour
     }
     else
     {
+      StatUnderMouse = false;
       SelectedObjectMessage = null;
       SelectedObjectStyle.normal.background = null;
     }
@@ -236,7 +252,7 @@ public class GameHandler : MonoBehaviour
       Transform Item = SlotClicked.GetChild(0);
       Vector2 pos;
       Item.GetComponent<Image>().raycastTarget = false;
-      RectTransformUtility.ScreenPointToLocalPointInRectangle(GameObject.Find("Canvas").transform as RectTransform, Input.mousePosition, Camera.main, out pos);
+      RectTransformUtility.ScreenPointToLocalPointInRectangle(GameObject.Find("Canvas").transform as RectTransform, Input.mousePosition, cam, out pos);
       Item.transform.position = GameObject.Find("Canvas").transform.TransformPoint(pos);
       if (Input.GetMouseButtonUp(0) && SlotUnderMouse != null && SlotUnderMouse.childCount == 0)
       {
@@ -276,11 +292,27 @@ public class GameHandler : MonoBehaviour
   {
     if (SlotUnderMouse != null)
     {
-      GUI.Box(new Rect(Input.mousePosition.x + 30f, Screen.height - Input.mousePosition.y, 90f, 25f), SelectedObjectMessage, SelectedObjectStyle);
+      GUI.Box(new Rect(Input.mousePosition.x + 30, Screen.height - Input.mousePosition.y, 90, 25), SelectedObjectMessage, SelectedObjectStyle);
     }
     else
     {
-      GUI.Box(new Rect(Input.mousePosition.x + 30f, Screen.height - Input.mousePosition.y, 150f, 80f), SelectedObjectMessage, SelectedObjectStyle);
+    if (StatUnderMouse)
+    {
+      GUI.Box(new Rect(Input.mousePosition.x + 30, Screen.height - Input.mousePosition.y, 150, 80), SelectedObjectMessage, SelectedObjectStyle);
+    }
+    }
+    if (message){
+      GUI.Box(new Rect(Input.mousePosition.x + 30, Screen.height - Input.mousePosition.y, 100, 20), messageText, messageStyle);
+    }
+  }
+
+  public IEnumerator Message(string text){
+    if(!message){
+    message  = true;
+    messageText = text;
+    yield return new WaitForSeconds(2);
+    message = false;
+    yield break;
     }
   }
 
@@ -323,7 +355,7 @@ public class GameHandler : MonoBehaviour
       NewItem.GetComponent<RectTransform>().localScale = new Vector3(0.5f, 0.5f, 0.5f);
       if (go.CompareTag("Bow"))
       { //para o arco não ficar muito em baixo no slot
-        NewItem.GetComponent<RectTransform>().localPosition = new Vector3(0f, 5f, 0f);
+        NewItem.GetComponent<RectTransform>().localPosition = new Vector3(0, 5, 0);
       }
       else
       {
@@ -331,6 +363,37 @@ public class GameHandler : MonoBehaviour
       }
       NewItem.GetComponent<Image>().sprite = go.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
       return;
+    }
+    return;
+  }
+
+  public bool CheckItems(int quant, string tag)
+  { //faz a checagem da quantidade de itens
+    foreach (Transform child in slots)
+    {
+      if (child.childCount > 0 && child.GetChild(0).CompareTag(tag))
+      {
+        if (child.GetComponent<InventorySlot>().ItemCount >= quant)
+        {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  public void DestroyItem(string tag, int quant)
+  { //destroi os itens usados no craft
+    foreach (Transform child in slots)
+    {
+      if (child.transform.childCount > 0 && child.GetChild(0).CompareTag(tag))
+      {
+        if (child.GetComponent<InventorySlot>().ItemCount >= quant)
+        {
+          child.GetComponent<InventorySlot>().ItemCount -= quant;
+          return;
+        }
+      }
     }
     return;
   }

@@ -9,8 +9,9 @@ public class DashCD : MonoBehaviour
   private TextMeshProUGUI text;
   private float dashCD;
   private bool canDash = true;
-  private float percCD = 1f;
+  private float percCD = 1;
   private float elapsed = 0;
+  [HideInInspector]
   public GameObject Player;
   bool CanDash;
   void Start()
@@ -28,7 +29,7 @@ public class DashCD : MonoBehaviour
       canDash = Player.GetComponent<PlayerController>().canDash;
     }
 
-    if (percCD >= 0.98)
+    if (percCD >= 0.98f)
     {
       bar.transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().color = Color.magenta;
     }
@@ -42,14 +43,14 @@ public class DashCD : MonoBehaviour
       elapsed += Time.deltaTime;
       text.text = elapsed.ToString("0.00") + "s/" + dashCD.ToString("0.00") + "s";
       percCD = elapsed / dashCD;
-      bar.localScale = new Vector3(percCD, 1f);
+      bar.localScale = new Vector3(percCD, 1);
     }
     else
     {
       elapsed = 0;
-      percCD = 1f;
+      percCD = 1;
       text.text = dashCD.ToString("0.00") + "s/" + dashCD.ToString("0.00") + "s";
-      bar.localScale = new Vector3(percCD, 1f);
+      bar.localScale = new Vector3(percCD, 1);
     }
 
   }

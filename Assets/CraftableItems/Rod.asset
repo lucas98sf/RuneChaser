@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8fab3f8152889443b66cf75262a12e8, type: 3}
+  m_Name: Rod
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 876001033327123157, guid: d3b5aec872b460747be47cc95a95bf31, type: 3}
+  needWorkbench: 1
+  needFurnace: 0
+  needAnvil: 0
+  quantCrafted: 1
+  position: {x: 0, y: 0.2, z: 0}
+  NeededItems:
+  - quant: 2
+    item: Stick
+  - quant: 1
+    item: IronBar

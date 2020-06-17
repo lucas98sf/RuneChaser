@@ -7,8 +7,8 @@ using TMPro;
 
 public class PlayerController : MonoBehaviour
 {
-  public Camera cam;
-
+  private Camera cam;
+  GameHandler GameHandler;
   [Header("Player Components")]
   Vector2 lookDir;
   public Rigidbody2D rb;
@@ -80,6 +80,7 @@ public class PlayerController : MonoBehaviour
 
   void Start()
   {
+    GameHandler = GameObject.Find("GameHandler").GetComponent<GameHandler>();
     cam = Camera.main;
     anim = GetComponent<Animation>();
     weapon = this.gameObject.transform.GetChild(2).gameObject;
@@ -138,6 +139,7 @@ public class PlayerController : MonoBehaviour
     yield return new WaitForSeconds(0.77f * (1 / attackspeed));
     GameObject arrow = Instantiate(Arrow, attackPoint.position, attackPoint.rotation);
     Rigidbody2D arrowrb = arrow.GetComponent<Rigidbody2D>();
+    GameHandler.DestroyItem("Arrow", 1);
     arrowrb.AddForce(attackPoint.up * arrowSpeed, ForceMode2D.Impulse);
     yield return new WaitForSeconds(0.1f * (1 / attackspeed));
     canBow = true;
@@ -163,7 +165,7 @@ public class PlayerController : MonoBehaviour
       rb.MovePosition(rb.position + movement.normalized * MoveSpeed * Time.fixedDeltaTime);
 
       lookDir = mousePos - rb.position;
-      float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg - 90f;
+      float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg - 90;
       rb.rotation = angle;
     }
 
@@ -237,17 +239,17 @@ public class PlayerController : MonoBehaviour
     //posição das mãos do personagem, conforme o item
     if (!Fishing)
     {
-      if (!weapon.CompareTag("Untagged") && !weapon.CompareTag("GoldOre") && !weapon.CompareTag("IronOre") && !weapon.CompareTag("Rock") && !weapon.CompareTag("IronBar") && !weapon.CompareTag("GoldBar"))
+      if (!weapon.CompareTag("Untagged") && !weapon.CompareTag("GoldOre") && !weapon.CompareTag("IronOre") && !weapon.CompareTag("Rock") && !weapon.CompareTag("IronBar") && !weapon.CompareTag("GoldBar") && !weapon.CompareTag("Arrow"))
       {
         righth.transform.localPosition = new Vector3(-1.75f, -1.25f, 0);
       }
       else
       {
-        righth.transform.localPosition = new Vector3(4f, -2.5f, 0);
+        righth.transform.localPosition = new Vector3(4, -2.5f, 0);
       }
-      if (weapon.CompareTag("GoldOre") || weapon.CompareTag("IronOre") || weapon.CompareTag("Rock") || weapon.CompareTag("IronBar") || weapon.CompareTag("GoldBar"))
+      if (weapon.CompareTag("GoldOre") || weapon.CompareTag("IronOre") || weapon.CompareTag("Rock") || weapon.CompareTag("IronBar") || weapon.CompareTag("GoldBar") || weapon.CompareTag("Arrow"))
       {
-        righth.transform.localPosition = new Vector3(1f, -1f, 0);
+        righth.transform.localPosition = new Vector3(1, -1, 0);
       }
       if (weapon.CompareTag("Bow"))
       {
@@ -256,7 +258,7 @@ public class PlayerController : MonoBehaviour
       }
       else
       {
-        lefth.transform.localPosition = new Vector3(-4f, -2.5f, 0);
+        lefth.transform.localPosition = new Vector3(-4, -2.5f, 0);
       }
     }
     //botão de ação somente quando não estiver clicando em um menu ou arrastando um item
@@ -264,7 +266,7 @@ public class PlayerController : MonoBehaviour
     {
       if (weapon.CompareTag(("Axe")))
       {
-        anim.Blend("AxePick", 1f);
+        anim.Blend("AxePick", 1);
         Collider2D[] hitTarget = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, AxeTargetLayers);
         foreach (Collider2D target in hitTarget)
         {
@@ -291,7 +293,7 @@ public class PlayerController : MonoBehaviour
       }
       if (weapon.CompareTag(("Pickaxe")))
       {
-        anim.Blend("AxePick", 1f);
+        anim.Blend("AxePick", 1);
         Collider2D[] hitTarget = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, PickaxeTargetLayers);
         foreach (Collider2D target in hitTarget)
         {
@@ -313,7 +315,7 @@ public class PlayerController : MonoBehaviour
       }
       if (weapon.CompareTag("WoodenSword") || weapon.CompareTag("IronSword") || weapon.CompareTag("GoldenSword"))
       {
-        anim.Blend("Sword", 1f);
+        anim.Blend("Sword", 1);
         Collider2D[] hitTarget = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, EnemyLayers);
         foreach (Collider2D target in hitTarget)
         {
@@ -326,8 +328,15 @@ public class PlayerController : MonoBehaviour
       }
       if (weapon.CompareTag("Bow"))
       {
-        anim.Blend("Bow", 1f);
-        if (canBow == true) { StartCoroutine(ShootBow()); }
+        if (GameHandler.CheckItems(1, "Arrow"))
+        {
+          anim.Blend("Bow", 1);
+          if (canBow == true) { StartCoroutine(ShootBow()); }
+        }
+        else
+        {
+          StartCoroutine(GameHandler.Message("No arrows!"));
+        }
       }
       if (weapon.CompareTag(("Untagged")))
       { //tentei alternar entre as mãos para socar mas tive problemas com o attack delay
@@ -345,7 +354,7 @@ public class PlayerController : MonoBehaviour
         // }
         // }
         // }
-        anim.Blend("Punch1", 1f);
+        anim.Blend("Punch1", 1);
         Collider2D[] hitTarget = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, EnemyLayers);
         foreach (Collider2D target in hitTarget)
         {
@@ -484,7 +493,7 @@ public class PlayerController : MonoBehaviour
       {
         Inventory(9);
       }
-      if (Input.GetAxis("Mouse ScrollWheel") > 0f && canScroll && !EventSystem.current.IsPointerOverGameObject())
+      if (Input.GetAxis("Mouse ScrollWheel") > 0 && canScroll && !EventSystem.current.IsPointerOverGameObject())
       {  //scroll para selecionar itens do inventário
         canScroll = false;
         if (quant < 9)
@@ -495,7 +504,7 @@ public class PlayerController : MonoBehaviour
         Inventory(quant);
         canScroll = true;
       }
-      if (Input.GetAxis("Mouse ScrollWheel") < 0f && canScroll && !EventSystem.current.IsPointerOverGameObject())
+      if (Input.GetAxis("Mouse ScrollWheel") < 0 && canScroll && !EventSystem.current.IsPointerOverGameObject())
       {
         canScroll = false;
         if (quant > 1)
@@ -529,17 +538,18 @@ public class PlayerController : MonoBehaviour
         {
           if (!Fishing && !anim.isPlaying)
           {
-            anim.Blend("FishThrow", 1f);
+            anim.Blend("FishThrow", 1);
             Fishing = true;
             StartCoroutine(Fish());
             return;
           }
           if (Fishing && !anim.isPlaying)
           {
-            anim.Blend("FishGrab", 1f);
+            anim.Blend("FishGrab", 1);
             Fishing = false;
             if (hit)
             {
+              hit = false;
               FishText.ShowText(gameObject, ":)", Color.green);
               Instantiate(Prefabs[5], gameObject.transform.position + new Vector3(0.2f, 0, 0), Quaternion.identity);
             }
@@ -566,8 +576,8 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(FishTime);
         hit = false;
         StartCoroutine(Fish());
+        yield break;
       }
-      yield break;
     }
   }
 

@@ -31,6 +31,7 @@ TagManager:
   - GoldenSword
   - Stat
   - Rod
+  - Arrow
   layers:
   - Default
   - TransparentFX
