@@ -1,1 +1,1 @@
-# Project-S
+# RuneChaser v1.0
