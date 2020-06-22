@@ -45,8 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed69fb2b9b7a41a4cb9d633195bf6013, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  NewItemPrefab: {fileID: 931619500004414807, guid: fdc1baa154529204a9a07964b97f9250,
-    type: 3}
+  Sound: {fileID: 8300000, guid: ca3d2cd7e1e66274ea6f42422e816c92, type: 3}
 --- !u!61 &6536550641219748033
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -118,6 +117,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

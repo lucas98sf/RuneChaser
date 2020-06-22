@@ -5,18 +5,25 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System.Text.RegularExpressions;
 using UnityEngine.SceneManagement;
+using TMPro;
 using UnityEditor;
 public class GameHandler : MonoBehaviour
 {
   [HideInInspector]
   public Camera cam;
+  public AudioClip Pick;
+  public static float timer;
+  public static float gametime;
   public GameObject PlayerPrefab;
+  public Altar Altar;
   public static GameObject Player;
   private bool activeCraft = false;
   private bool activeStats = false;
   private string SelectedObjectMessage;
-  [HideInInspector]
   public GUIStyle SelectedObjectStyle;
+  public static GameObject inventory;
+  public GameObject Inventory1;
+  public GameObject Inventory2;
   bool message;
   string messageText;
   public GUIStyle messageStyle;
@@ -34,8 +41,16 @@ public class GameHandler : MonoBehaviour
   public XPBar XPBar;
   public Stats Stats;
   public Arrow Arrow;
+  public Bomb Bomb;
   public Craft Craft;
   public static GameObject menu;
+  public GameObject InvButton;
+  public GameObject CftButton;
+  public GameObject StsButton;
+  public GameObject Compass;
+  public static string timestring;
+  public TextMeshProUGUI TimeCounter;
+  public static AudioSource Audio;
 
   // public int treesQuant;
   // public int ironveinsQuant;
@@ -52,30 +67,59 @@ public class GameHandler : MonoBehaviour
     DashCD.Player = Player;
     Stats.Player = Player;
     Arrow.Player = Player;
+    Bomb.Player = Player;
     Craft.Player = Player;
-    slots = GameObject.Find("GameHandler/Canvas/Inventory/Slots").transform;
+    Player.GetComponent<PlayerController>().PlayerHealthBar = PlayerHealthBar;
+    inventory = Inventory1;
+    slots = inventory.transform.Find("Slots").transform;
     cam = Camera.main;
+    gametime = 0;
+    timer = 0;
+    Audio = gameObject.GetComponent<AudioSource>();
+    Audio.volume = menu.GetComponent<MainMenu>().FXVolume.value;
   }
-  
+  void FixedUpdate()
+  {
+    menu.GetComponent<MainMenu>().Music.volume = menu.GetComponent<MainMenu>().MusicVolume.value;
+    Audio.volume = menu.GetComponent<MainMenu>().FXVolume.value;
+    gametime += Time.fixedDeltaTime;
+    if (gametime >= 180)
+    {
+      timer += Time.fixedDeltaTime; //escalonamento com o tempo depois de 3 minutos
+    }
+    Rigidbody2D rb = Compass.GetComponent<Rigidbody2D>();
+    Vector3 pos = rb.position;
+    Vector2 lookDir = Altar.transform.position - pos;
+    float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg - 270;
+    rb.rotation = angle;
+    timestring = string.Format("{0:0}:{1:00}", Mathf.FloorToInt(gametime / 60F), Mathf.FloorToInt(GameHandler.gametime - Mathf.FloorToInt(gametime / 60F) * 60));
+    TimeCounter.text = timestring;
+  }
   void Update()
   {
-    if (EventSystem.current.currentSelectedGameObject != null && EventSystem.current.currentSelectedGameObject.name == "Scrollbar")
+    if (Input.GetKeyDown(KeyCode.Q))
+    {
+      ChangeInv();
+    }
+
+    if (inventory == null)
+    {
+      inventory = Inventory1;
+    }
+
+    slots = inventory.transform.Find("Slots").transform;
+
+    if (EventSystem.current.currentSelectedGameObject != null && (EventSystem.current.currentSelectedGameObject.name == "Scrollbar" || EventSystem.current.currentSelectedGameObject.name == "Inv" || EventSystem.current.currentSelectedGameObject.name == "Cft" || EventSystem.current.currentSelectedGameObject.name == "Sts"))
     {
       EventSystem.current.SetSelectedGameObject(null);
     }
 
-    if (Input.GetKeyDown(KeyCode.Escape))
-    { //menu
-      cam.GetComponent<AudioListener>().enabled = false;
-      menu.SetActive(true);
-    }
-
     foreach (Transform child in slots)
     { //mostra o numero de itens caso houver mais que 1
-      GameObject.Find("GameHandler/Canvas/Inventory/Numbers/" + child.name).GetComponent<Text>().text = "" + child.gameObject.GetComponent<InventorySlot>().ItemCount + "";
+      inventory.transform.Find("Numbers").transform.Find(child.name).GetComponent<Text>().text = "" + child.gameObject.GetComponent<InventorySlot>().ItemCount + "";
       if (child.gameObject.GetComponent<InventorySlot>().ItemCount < 2)
       {
-        GameObject.Find("GameHandler/Canvas/Inventory/Numbers/" + child.name).GetComponent<Text>().text = "";
+        inventory.transform.Find("Numbers").transform.Find(child.name).GetComponent<Text>().text = "";
       }
     }
     //usado apenas para ver a quantidade de objetos gerados
@@ -89,34 +133,12 @@ public class GameHandler : MonoBehaviour
 
     if (Input.GetKeyDown(KeyCode.E))
     { //tela de craft
-      if (activeCraft == false)
-      {
-        GameObject.Find("GameHandler/Canvas/Craft").SetActive(true);
-        activeCraft = true;
-        return;
-      }
-      if (activeCraft == true)
-      {
-        GameObject.Find("GameHandler/Canvas/Craft").SetActive(false);
-        activeCraft = false;
-        return;
-      }
+      OpenCraft();
     }
 
     if (Input.GetKeyDown(KeyCode.C))
     { //tela de atributos
-      if (activeStats == false)
-      {
-        GameObject.Find("GameHandler/Canvas/Stats").SetActive(true);
-        activeStats = true;
-        return;
-      }
-      if (activeStats == true)
-      {
-        GameObject.Find("GameHandler/Canvas/Stats").SetActive(false);
-        activeStats = false;
-        return;
-      }
+      OpenStats();
     }
 
     if (EventSystem.current.IsPointerOverGameObject())
@@ -265,13 +287,24 @@ public class GameHandler : MonoBehaviour
         Drag = false;
         return;
       }
-      if (Input.GetMouseButtonUp(0) && SlotUnderMouse.childCount > 0 && SlotUnderMouse != null && SlotUnderMouse != SlotClicked)
+      if (Input.GetMouseButtonUp(0) && SlotUnderMouse != null && SlotUnderMouse.childCount > 0 && SlotUnderMouse != SlotClicked && !SlotUnderMouse.GetChild(0).CompareTag(SlotClicked.GetChild(0).tag))
       {
         int amount = SlotUnderMouse.GetComponent<InventorySlot>().ItemCount;
         SlotUnderMouse.GetComponent<InventorySlot>().ItemCount = SlotClicked.GetComponent<InventorySlot>().ItemCount;
         SlotClicked.GetComponent<InventorySlot>().ItemCount = amount;
         SlotUnderMouse.GetChild(0).SetParent(SlotClicked);
         Item.SetParent(SlotUnderMouse);
+        SlotClicked.GetChild(0).localPosition = Vector3.zero;
+        SlotUnderMouse.GetChild(0).localPosition = Vector3.zero;
+        Item.GetComponent<Image>().raycastTarget = true;
+        Drag = false;
+        return;
+      }
+      if (Input.GetMouseButtonUp(0) && SlotUnderMouse != null && SlotUnderMouse.childCount > 0 && SlotUnderMouse != SlotClicked && SlotUnderMouse.GetChild(0).CompareTag(SlotClicked.GetChild(0).tag))
+      {
+        SlotUnderMouse.GetComponent<InventorySlot>().ItemCount += SlotClicked.GetComponent<InventorySlot>().ItemCount;
+        Destroy(SlotClicked.GetChild(0).gameObject);
+        SlotClicked.GetComponent<InventorySlot>().ItemCount = 0;
         SlotClicked.GetChild(0).localPosition = Vector3.zero;
         SlotUnderMouse.GetChild(0).localPosition = Vector3.zero;
         Item.GetComponent<Image>().raycastTarget = true;
@@ -296,29 +329,32 @@ public class GameHandler : MonoBehaviour
     }
     else
     {
-    if (StatUnderMouse)
+      if (StatUnderMouse)
+      {
+        GUI.Box(new Rect(Input.mousePosition.x + 30, Screen.height - Input.mousePosition.y, 150, 80), SelectedObjectMessage, SelectedObjectStyle);
+      }
+    }
+    if (message)
     {
-      GUI.Box(new Rect(Input.mousePosition.x + 30, Screen.height - Input.mousePosition.y, 150, 80), SelectedObjectMessage, SelectedObjectStyle);
-    }
-    }
-    if (message){
       GUI.Box(new Rect(Input.mousePosition.x + 30, Screen.height - Input.mousePosition.y, 100, 20), messageText, messageStyle);
     }
   }
 
-  public IEnumerator Message(string text){
-    if(!message){
-    message  = true;
-    messageText = text;
-    yield return new WaitForSeconds(2);
-    message = false;
-    yield break;
+  public IEnumerator Message(string text)
+  {
+    if (!message)
+    {
+      message = true;
+      messageText = text;
+      yield return new WaitForSeconds(2);
+      message = false;
+      yield break;
     }
   }
 
   public static Transform FindSlot(GameObject go)
   { //acha o slot disponivel, caso já tenha o item apenas aumenta o count
-    foreach (Transform child in GameObject.Find("GameHandler/Canvas/Inventory/Slots").transform)
+    foreach (Transform child in inventory.transform.Find("Slots").transform)
     {
       if (child.transform.childCount > 0 && child.GetChild(0).GetComponent<Image>().sprite == go.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite)
       {
@@ -328,7 +364,7 @@ public class GameHandler : MonoBehaviour
     }
     GameObject NextSlotGO = new GameObject();
     Transform NextSlot = NextSlotGO.transform;
-    foreach (Transform child in GameObject.Find("GameHandler/Canvas/Inventory/Slots").transform)
+    foreach (Transform child in inventory.transform.Find("Slots").transform)
     {
       if (child.transform.childCount == 0)
       {
@@ -341,7 +377,7 @@ public class GameHandler : MonoBehaviour
     return null;
   }
 
-  public static void PutInSlot(GameObject go)
+  public static void PutInSlot(GameObject go, AudioClip sound)
   {  //cria um novo slot e põe o item
     if (FindSlot(go) != null)
     {
@@ -362,8 +398,10 @@ public class GameHandler : MonoBehaviour
         NewItem.GetComponent<RectTransform>().localPosition = Vector3.zero;
       }
       NewItem.GetComponent<Image>().sprite = go.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
+      Audio.PlayOneShot(sound);
       return;
     }
+    Audio.PlayOneShot(sound);
     return;
   }
 
@@ -398,9 +436,69 @@ public class GameHandler : MonoBehaviour
     return;
   }
 
-  public void GameOverBack()
+  public void Back()
   {
-    GameObject.Find("GameHandler/Canvas/GameOver").SetActive(false);
-    SceneManager.LoadScene("Main Menu");
+    if (GameObject.Find("GameHandler/Canvas/GameOver").activeInHierarchy)
+    {
+      GameObject.Find("GameHandler/Canvas/GameOver").SetActive(false);
+    }
+    if (GameObject.Find("GameHandler/Canvas/GameWin").activeInHierarchy)
+    {
+      GameObject.Find("GameHandler/Canvas/GameWin").SetActive(false);
+    }
+    Destroy(Audio);
+    SceneManager.LoadSceneAsync("MainMenu");
+  }
+
+  public void ChangeInv()
+  {
+    if (Inventory1.activeInHierarchy)
+    {
+      PlayerController.ClearSelected();
+      PlayerController.SelectedSlot = null;
+      Inventory1.SetActive(false);
+      Inventory2.SetActive(true);
+      inventory = Inventory2;
+      InvButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "2";
+    }
+    else
+    {
+      PlayerController.ClearSelected();
+      PlayerController.SelectedSlot = null;
+      Inventory2.SetActive(false);
+      Inventory1.SetActive(true);
+      inventory = Inventory1;
+      InvButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "1";
+    }
+  }
+  public void OpenCraft()
+  {
+    if (activeCraft == false)
+    {
+      GameObject.Find("GameHandler/Canvas/Craft").SetActive(true);
+      activeCraft = true;
+      return;
+    }
+    if (activeCraft == true)
+    {
+      GameObject.Find("GameHandler/Canvas/Craft").SetActive(false);
+      activeCraft = false;
+      return;
+    }
+  }
+  public void OpenStats()
+  {
+    if (activeStats == false)
+    {
+      GameObject.Find("GameHandler/Canvas/Stats").SetActive(true);
+      activeStats = true;
+      return;
+    }
+    if (activeStats == true)
+    {
+      GameObject.Find("GameHandler/Canvas/Stats").SetActive(false);
+      activeStats = false;
+      return;
+    }
   }
 }

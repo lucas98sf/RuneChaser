@@ -7,10 +7,10 @@ public class InventorySlot : MonoBehaviour
 {
   public int ItemCount;
   public Image SlotImage;
-  void Awake()
+  void Start()
   {
     ItemCount = 0;
-    foreach (Transform child in GameObject.Find("Canvas/Inventory/SlotImages").transform)
+    foreach (Transform child in GameHandler.inventory.transform.Find("SlotImages").transform)
     { //relaciona os slots e seus backgrounds (separei por problemas com o drag n drop)
       if (child.name == gameObject.name)
       {

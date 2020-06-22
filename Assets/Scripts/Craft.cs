@@ -6,9 +6,10 @@ using UnityEngine.EventSystems;
 using System.Text.RegularExpressions;
 
 public class Craft : MonoBehaviour
-{  
+{
   [HideInInspector]
   public GameObject Player;
+  public AudioClip Sound;
   public GameObject craftbutton;
   public CraftableItem[] items;
   GameHandler GameHandler;
@@ -160,7 +161,7 @@ public class Craft : MonoBehaviour
         {
           if (!item.needWorkbench && !item.needFurnace && !item.needAnvil)
           {
-            GameHandler.PutInSlot(item.prefab);
+            GameHandler.PutInSlot(item.prefab, Sound);
           }
           else
           {

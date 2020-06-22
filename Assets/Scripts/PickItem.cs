@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class PickItem : MonoBehaviour
 {
   private bool istriggered = false;
+  public AudioClip Sound;
 
   void OnTriggerStay2D(Collider2D other)
   { // pegar itens do chão
@@ -13,11 +14,11 @@ public class PickItem : MonoBehaviour
     {
       if (istriggered == false)
       {
-        if (Input.GetKeyDown(KeyCode.F))
+        if (Input.GetKey(KeyCode.F))
         {
           istriggered = true;
           int fullSlots = 0;
-          foreach (Transform child in GameObject.Find("GameHandler/Canvas/Inventory/Slots").transform)
+          foreach (Transform child in GameHandler.inventory.transform.Find("Slots").transform)
           {
             if (child.transform.childCount > 0 && !child.transform.GetChild(0).CompareTag(gameObject.tag))
             {
@@ -31,7 +32,7 @@ public class PickItem : MonoBehaviour
           }
           else
           {
-            GameHandler.PutInSlot(gameObject);
+            GameHandler.PutInSlot(gameObject, Sound);
             Destroy(gameObject);
             istriggered = false;
           }

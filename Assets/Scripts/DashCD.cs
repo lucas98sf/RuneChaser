@@ -47,10 +47,13 @@ public class DashCD : MonoBehaviour
     }
     else
     {
-      elapsed = 0;
-      percCD = 1;
-      text.text = dashCD.ToString("0.00") + "s/" + dashCD.ToString("0.00") + "s";
-      bar.localScale = new Vector3(percCD, 1);
+      if (canDash)
+      {
+        elapsed = 0;
+        percCD = 1;
+        text.text = dashCD.ToString("0.00") + "s/" + dashCD.ToString("0.00") + "s";
+        bar.localScale = new Vector3(percCD, 1);
+      }
     }
 
   }

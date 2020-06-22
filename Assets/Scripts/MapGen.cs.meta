@@ -10,6 +10,8 @@ MonoImporter:
       type: 3}
   - GoldVeinPrefab: {fileID: 3924880164107237574, guid: addd723cb4636a2439a46273cb957c92,
       type: 3}
+  - ApplePrefab: {fileID: 689633673363151169, guid: 33009dbd8a759764fa44a62fbf9049fb,
+      type: 3}
   - RockPrefab: {fileID: 2207539823699674639, guid: 83d0bb724ac2db94aa0e1822f19c6c2e,
       type: 3}
   - StickPrefab: {fileID: 5489552202293267392, guid: 97c30d53d5985444fa262080d9284508,

@@ -437,7 +437,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 734591301940333685}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 50, y: 50, z: 0}
+  m_LocalPosition: {x: 50, y: 48.8, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 734591301726041692}
@@ -459,32 +459,67 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e120e3262a74b547a5c4bf0b67fe57a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Swing: {fileID: 8300000, guid: bcfc65a1f886b6142ad3c69d8f61ead1, type: 3}
+  Bow: {fileID: 8300000, guid: 664e7d4cb24c6a143a417c425cba018b, type: 3}
+  Success: {fileID: 8300000, guid: 009a7eb6009362e499a6aed069d46e4a, type: 3}
+  Error: {fileID: 8300000, guid: df73df513c4b4f94a8a8aee3b2ee1941, type: 3}
+  Drop: {fileID: 8300000, guid: ca3d2cd7e1e66274ea6f42422e816c92, type: 3}
+  DashSound: {fileID: 8300000, guid: c6369c2048266ed44b96e6ab525ac4c9, type: 3}
+  PlayerHealthBar: {fileID: 7265838733847150785, guid: dd7b6916c1636224ebf67cb21c831a03,
+    type: 3}
   rb: {fileID: 734591301940333691}
   attackPoint: {fileID: 734591301588107177}
   Dash: {fileID: 8086510537285539108, guid: 96a628969cc6c9f4d9e2567cee80f6c4, type: 3}
-  FishTime: 0.35
+  FishTime: 0.4
   FishText: {fileID: 972151807920448925, guid: 3a5f3139dddfbfe43823e06804943e50, type: 3}
+  BlueRune: {fileID: 7151698595046997477, guid: f44cebd3d30c94948b6e0022f4de698b,
+    type: 3}
+  FishPrefabs:
+  - {fileID: 7754621060982747018, guid: c83e452d3ec5d8f439e40773382fbd76, type: 3}
+  - {fileID: 710562653299805245, guid: 9a46c14b4b0e4f64da9cf116164b2492, type: 3}
+  - {fileID: 710562653299805245, guid: 9a46c14b4b0e4f64da9cf116164b2492, type: 3}
+  - {fileID: 710562653299805245, guid: 9a46c14b4b0e4f64da9cf116164b2492, type: 3}
+  - {fileID: 710562653299805245, guid: 9a46c14b4b0e4f64da9cf116164b2492, type: 3}
+  - {fileID: 3618760772775861814, guid: 3cac974056ab9284a814473bf169aef0, type: 3}
+  - {fileID: 3618760772775861814, guid: 3cac974056ab9284a814473bf169aef0, type: 3}
+  - {fileID: 3618760772775861814, guid: 3cac974056ab9284a814473bf169aef0, type: 3}
+  - {fileID: 710562653299805245, guid: 9a46c14b4b0e4f64da9cf116164b2492, type: 3}
+  - {fileID: 882958232942547549, guid: 0bff86e49bac3fc47ae0a04a5b125953, type: 3}
+  - {fileID: 882958232942547549, guid: 0bff86e49bac3fc47ae0a04a5b125953, type: 3}
   Prefabs:
+  - {fileID: 1705361063732268222, guid: 42777889fd81f244fa09d2abbc33154f, type: 3}
   - {fileID: 4822015788812397674, guid: ecabcdd98b9d5974a89887e70b7d3005, type: 3}
+  - {fileID: 689633673363151169, guid: 33009dbd8a759764fa44a62fbf9049fb, type: 3}
   - {fileID: 6395767964384294878, guid: 48b701f8341b4764d951e8910a2e4ec9, type: 3}
+  - {fileID: 882958232942547549, guid: 0bff86e49bac3fc47ae0a04a5b125953, type: 3}
+  - {fileID: 7151698595046997477, guid: f44cebd3d30c94948b6e0022f4de698b, type: 3}
+  - {fileID: 710562653299805245, guid: 9a46c14b4b0e4f64da9cf116164b2492, type: 3}
   - {fileID: 4073824185620130838, guid: f288565da253e7042b46d83ec9198f78, type: 3}
   - {fileID: 1644965363000987977, guid: 102946c2f7dc8a54c85891d92d538eda, type: 3}
-  - {fileID: 457388398922511363, guid: 82e261be2f35b3a46b32c202041496d0, type: 3}
   - {fileID: 3004435047904456507, guid: 54f255b55c7d59842aa450da36ad929d, type: 3}
+  - {fileID: 3813494657130916363, guid: dd500b3ebf91c5243a1cd532dc12513a, type: 3}
   - {fileID: 5330110692582531258, guid: 93bdc1b088d6e3447af160ceaccfb245, type: 3}
   - {fileID: 9022448801577578606, guid: d9be6fc7638db0d4db3d3eebc0f8756e, type: 3}
   - {fileID: 4947518167239023741, guid: 7ce3094a45cbee24181588261f2c780f, type: 3}
-  - {fileID: 4561059337352822861, guid: e9fe7597eba980449be4dc9d123c2ec6, type: 3}
   - {fileID: 926238010776090022, guid: ad71ee77069436b4d93e62de0e8ba8b0, type: 3}
+  - {fileID: 4561059337352822861, guid: e9fe7597eba980449be4dc9d123c2ec6, type: 3}
+  - {fileID: 3618760772775861814, guid: 3cac974056ab9284a814473bf169aef0, type: 3}
+  - {fileID: 2793689828204225233, guid: 8481b9a8528f9504c8d5a120cd4ba787, type: 3}
   - {fileID: 2207539823699674639, guid: 83d0bb724ac2db94aa0e1822f19c6c2e, type: 3}
   - {fileID: 876001033327123157, guid: d3b5aec872b460747be47cc95a95bf31, type: 3}
   - {fileID: 5489552202293267392, guid: 97c30d53d5985444fa262080d9284508, type: 3}
   - {fileID: 8233318092136425271, guid: 79c5684705c4b074382916c943ed9217, type: 3}
   - {fileID: 8018902021032612287, guid: 89cb675fa27969a439d7e35215317c3b, type: 3}
+  - {fileID: 7754621060982747018, guid: c83e452d3ec5d8f439e40773382fbd76, type: 3}
+  - {fileID: 1486229858010649621, guid: 77e3a5adab1d556449122a9994d4401f, type: 3}
+  - {fileID: 8399575739889447931, guid: a9821766ca5ad2d4a9d9a7fa4d038211, type: 3}
+  - {fileID: 7575885935140639988, guid: e63fd8c89ac53e44daf3f6fc0bf77591, type: 3}
+  - {fileID: 457388398922511363, guid: 82e261be2f35b3a46b32c202041496d0, type: 3}
   - {fileID: 5243872438242788532, guid: 2bb95ddf204e2eb4e96935921072c213, type: 3}
   - {fileID: 5804620564246860620, guid: 4358818636827e7419e7f94728dcb487, type: 3}
   - {fileID: 8517182480397987053, guid: 5aa4a3568268f6b4190ba21822fe9927, type: 3}
   Arrow: {fileID: 977179950277609351, guid: a8f49278a181f38409573e132caf79f8, type: 3}
+  Bomb: {fileID: 1886086262610065918, guid: b45495a6c4d22f348bc8e82afa3c5147, type: 3}
   AxeTargetLayers:
     serializedVersion: 2
     m_Bits: 512
@@ -497,9 +532,16 @@ MonoBehaviour:
   LakeLayers:
     serializedVersion: 2
     m_Bits: 4096
+  AltarLayer:
+    serializedVersion: 2
+    m_Bits: 16384
+  CrystalLayer:
+    serializedVersion: 2
+    m_Bits: 8192
   baseMoveSpeed: 0.6
   attackRange: 0.12
-  arrowSpeed: 2
+  arrowSpeed: 2.5
+  bombSpeed: 1.5
   baseBowDamage: 2
   baseSwordDamage: 4
   basedashCD: 7
@@ -523,8 +565,6 @@ MonoBehaviour:
   points: 1
   baseexp: 48
   exp: 0
-  armor: 0
-  Resistance: 0
   CritChance: 0
   CritMult: 0
   canDash: 1
@@ -548,6 +588,7 @@ Animation:
   - {fileID: 7400000, guid: 8c9cdd095716d514c914a4715bd1d4bd, type: 2}
   - {fileID: 7400000, guid: db2c28c4795674648b13704edf19b192, type: 2}
   - {fileID: 7400000, guid: 5b3f1a4f90800724a8253c8ca9c53ebb, type: 2}
+  - {fileID: 0}
   m_WrapMode: 0
   m_PlayAutomatically: 0
   m_AnimatePhysics: 0

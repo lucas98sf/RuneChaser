@@ -5,7 +5,15 @@ using UnityEngine;
 public class Arrow : MonoBehaviour
 {
   [HideInInspector]
+  public PlayerHealthBar PlayerHealthBar;
+  [HideInInspector]
   public GameObject Player;
+  [HideInInspector]
+  public GameObject Enemy;
+  void Start()
+  {
+    PlayerHealthBar = GameObject.Find("PlayerHealthBar").GetComponent<PlayerHealthBar>();
+  }
   void OnCollisionEnter2D(Collision2D other)
   { //causa dano ao acertar, com chance de critico
     if (other.gameObject.CompareTag("Enemy"))
@@ -17,6 +25,21 @@ public class Arrow : MonoBehaviour
       else
       {
         other.gameObject.GetComponentInChildren<HealthBar>().TakeDamage(Player.GetComponent<PlayerController>().BowDamage, false);
+      }
+      Destroy(gameObject);
+    }
+    if (other.gameObject.CompareTag("Player"))
+    {
+      if (Enemy.GetComponent<EnemyController>() != null)
+      {
+        if (Random.value <= Enemy.GetComponent<EnemyController>().CritChance)
+        {
+          PlayerHealthBar.TakeDamage(Enemy.GetComponent<EnemyController>().BowDamage * Enemy.GetComponent<EnemyController>().CritMult, true);
+        }
+        else
+        {
+          PlayerHealthBar.TakeDamage(Enemy.GetComponent<EnemyController>().BowDamage, false);
+        }
       }
     }
     Destroy(gameObject);

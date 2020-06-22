@@ -9,7 +9,17 @@ public class PlayerController : MonoBehaviour
 {
   private Camera cam;
   GameHandler GameHandler;
+  public AudioClip Swing;
+  public AudioClip Bow;
+  public AudioClip Success;
+  public AudioClip Error;
+  public AudioClip Drop;
+  public AudioClip DashSound;
   [Header("Player Components")]
+  [HideInInspector]
+  public PlayerHealthBar PlayerHealthBar;
+  [HideInInspector]
+  public static GameObject inventory;
   Vector2 lookDir;
   public Rigidbody2D rb;
   public Transform attackPoint;
@@ -20,35 +30,40 @@ public class PlayerController : MonoBehaviour
   GameObject righth;
   GameObject lefth;
   Transform slots;
-  GameObject SelectedSlot;
+  [HideInInspector]
+  public static GameObject SelectedSlot;
   Animation anim;
   public float FishTime;
   public FishText FishText;
   [Header("Prefabs")]
+  public GameObject BlueRune;
+  public List<GameObject> FishPrefabs;
   public GameObject[] Prefabs;
   private GameObject Prefab;
   public GameObject Arrow;
+  public GameObject Bomb;
   [Header("Targets")]
   public LayerMask AxeTargetLayers;
   public LayerMask PickaxeTargetLayers;
   public LayerMask EnemyLayers;
   public LayerMask LakeLayers;
+  public LayerMask AltarLayer;
+  public LayerMask CrystalLayer;
   [Header("Player Stats")]
   public float baseMoveSpeed;
   public float attackRange;
   public float arrowSpeed;
-  public int baseBowDamage;
-  public int baseSwordDamage;
-  private float AxeDamage = 1;
-  private float PickaxeDamage = 1;
+  public float bombSpeed;
+  public float baseBowDamage;
+  public float baseSwordDamage;
   public float basedashCD;
   public float basehealth;
-  public float baseregen;
-  public float strength; //atributos, work in progress
-  public float agility;
-  public float vigor;
-  public float dexterity;
-  public float swiftness;
+  public float baseregen = 5;
+  public int strength;
+  public int agility;
+  public int vigor;
+  public int dexterity;
+  public int swiftness;
   [Header("In Game")]
   public float MoveSpeed;
   public int BowDamage;
@@ -57,14 +72,14 @@ public class PlayerController : MonoBehaviour
   public float dashCD;
   public float dashrange = 0;
   public float health;
-  public float regen;
+  public float regen = 5;
   public float regenquant = 1;
   public int level = 1;
   public float points = 1;
   public float baseexp;
   public float exp;
-  public float armor = 0;
-  public float Resistance;
+  //public float armor = 0;
+  //public float Resistance;
   public float CritChance;
   public float CritMult;
   private bool canAxePick = true;
@@ -72,6 +87,7 @@ public class PlayerController : MonoBehaviour
   private bool canScroll = true;
   private bool canAttack = true;
   private bool canBow = true;
+  private bool canBomb = true;
   private bool Fishing;
   private bool hit;
   [HideInInspector] public bool canDash = true;
@@ -81,13 +97,14 @@ public class PlayerController : MonoBehaviour
   void Start()
   {
     GameHandler = GameObject.Find("GameHandler").GetComponent<GameHandler>();
+    inventory = GameHandler.inventory;
     cam = Camera.main;
     anim = GetComponent<Animation>();
     weapon = this.gameObject.transform.GetChild(2).gameObject;
     righth = this.gameObject.transform.GetChild(1).GetChild(1).gameObject;
     lefth = this.gameObject.transform.GetChild(1).GetChild(0).gameObject;
-    slots = GameObject.Find("GameHandler/Canvas/Inventory/Slots").transform;
-    baseexp = Mathf.RoundToInt(level * 1.2f * 32);
+    slots = inventory.transform.Find("Slots").transform;
+    baseexp = Mathf.RoundToInt(level * 1.2f * 16);
   }
 
   IEnumerator AttackDelay(Collider2D target, float damage)
@@ -104,8 +121,8 @@ public class PlayerController : MonoBehaviour
       {
         target.gameObject.GetComponent<HealthBar>().TakeDamage(damage, false);
       }
+      target.GetComponent<Rigidbody2D>().AddForce((target.transform.position - gameObject.transform.position).normalized * (damage * 5));
     }
-    target.GetComponent<Rigidbody2D>().AddForce((target.transform.position - gameObject.transform.position).normalized * (damage * 5));
     yield return new WaitForSeconds(0.4f * (1 / attackspeed));
     canAttack = true;
   }
@@ -121,13 +138,13 @@ public class PlayerController : MonoBehaviour
     yield return new WaitForSeconds(0.4f * (1 / attackspeed));
     if (target != null)
     {
-      if (weapon.CompareTag("Axe"))
+      if (weapon.CompareTag("VilePickAxe"))
       {
-        target.GetComponent<HealthBar>().TakeDamage(AxeDamage, false);
+        target.GetComponent<HealthBar>().TakeDamage(2, false);
       }
-      if (weapon.CompareTag("Pickaxe"))
+      else
       {
-        target.GetComponent<HealthBar>().TakeDamage(PickaxeDamage, false);
+        target.GetComponent<HealthBar>().TakeDamage(1, false);
       }
     }
     canAxePick = true;
@@ -137,6 +154,7 @@ public class PlayerController : MonoBehaviour
   {
     canBow = false;
     yield return new WaitForSeconds(0.77f * (1 / attackspeed));
+    GameHandler.Audio.PlayOneShot(Bow);
     GameObject arrow = Instantiate(Arrow, attackPoint.position, attackPoint.rotation);
     Rigidbody2D arrowrb = arrow.GetComponent<Rigidbody2D>();
     GameHandler.DestroyItem("Arrow", 1);
@@ -145,20 +163,70 @@ public class PlayerController : MonoBehaviour
     canBow = true;
   }
 
+  IEnumerator ThrowBomb()
+  {
+    canBomb = false;
+    yield return new WaitForSeconds(0.3f * (1 / attackspeed));
+    GameObject bomb = Instantiate(Bomb, attackPoint.position, attackPoint.rotation);
+    Rigidbody2D bombrb = bomb.GetComponent<Rigidbody2D>();
+    GameHandler.DestroyItem("PufferFish", 1);
+    bombrb.AddForce(attackPoint.up * bombSpeed, ForceMode2D.Impulse);
+    yield return new WaitForSeconds(0.57f * (1 / attackspeed));
+    canBomb = true;
+  }
+
   IEnumerator DashDelay()
   {
     canDash = false;
     yield return new WaitForSeconds(dashCD);
     canDash = true;
   }
-
+  private void HandleMovement()
+  {
+    float moveX = 0f;
+    float moveY = 0f;
+    if (Input.GetKey(KeyCode.W))
+    {
+      moveY = +1f;
+    }
+    if (Input.GetKey(KeyCode.A))
+    {
+      moveX = -1f;
+    }
+    if (Input.GetKey(KeyCode.S))
+    {
+      moveY = -1f;
+    }
+    if (Input.GetKey(KeyCode.D))
+    {
+      moveX = +1f;
+    }
+    Vector3 moveDir = new Vector3(moveX, moveY).normalized;
+    transform.position += moveDir * MoveSpeed * Time.deltaTime;
+  }
   void FixedUpdate()
   {
+    if (Input.GetKeyDown(KeyCode.Escape))
+    { //menu
+      MainMenu.paused = true;
+      GameHandler.menu.GetComponent<MainMenu>().mainmenu.transform.GetChild(0).gameObject.SetActive(true);
+      GameHandler.menu.GetComponent<MainMenu>().mainmenu.transform.GetChild(1).gameObject.SetActive(false);
+      GameHandler.menu.GetComponent<MainMenu>().mainmenu.transform.GetChild(2).gameObject.SetActive(false);
+      GameHandler.menu.SetActive(true);
+      Time.timeScale = 0f;
+    }
+    inventory = GameHandler.inventory;
+    if (inventory != null)
+    {
+      slots = inventory.transform.Find("Slots").transform;
+    }
+
     //simples movimentação e rotação conforme posição do mouse
     if (!Fishing)
     {
-      movement.x = Input.GetAxisRaw("Horizontal");
-      movement.y = Input.GetAxisRaw("Vertical");
+      //movement.x = Input.GetAxisRaw("Horizontal");
+      //movement.y = Input.GetAxisRaw("Vertical");
+      HandleMovement();
 
       mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
 
@@ -169,11 +237,16 @@ public class PlayerController : MonoBehaviour
       rb.rotation = angle;
     }
 
-    if (exp >= baseexp)
+    if (level >= 30) //trava no max level
+    {
+      baseexp = exp = level = 30;
+    }
+
+    if (exp >= baseexp && level < 30)
     {
       exp = Mathf.RoundToInt(exp - baseexp);
       level++;
-      baseexp = Mathf.RoundToInt(level * 1.2f * 32);
+      baseexp = Mathf.RoundToInt(level * 1.2f * 16);
       points++;
       if (level % 5 == 0)
       {
@@ -196,24 +269,28 @@ public class PlayerController : MonoBehaviour
     }
 
     //atributos (WIP)
-    Resistance = 1 - (10 / (10 + armor));
-    SwordDamage = Mathf.RoundToInt((baseSwordDamage * (1 + strength * 0.13f)) + (strength * 1.2f));
-    if (weapon.CompareTag("IronSword"))
+    //Resistance = 1 - (10 / (10 + armor));
+    if (weapon.CompareTag("IronSword") || weapon.CompareTag("SwordFish"))
     {
       baseSwordDamage = 7;
     }
-    if (weapon.CompareTag("GoldenSword"))
+    if (weapon.CompareTag("VileSword"))
     {
       baseSwordDamage = 11;
     }
+    if (weapon.CompareTag("VileBow"))
+    {
+      baseBowDamage = 4.5f;
+    }
+    SwordDamage = Mathf.RoundToInt((baseSwordDamage * (1 + (strength * 0.13f))) + (strength * 1.2f));
     BowDamage = Mathf.RoundToInt((baseBowDamage * (1 + (dexterity * 0.06f))) + (strength * 0.1f) + (dexterity * 0.8f));
     attackspeed = 1 / (8.5f / (8.5f + agility));
     foreach (AnimationState state in anim)
     {
       state.speed = attackspeed;
     }
-    health = Mathf.RoundToInt(basehealth + ((vigor * 4) / 0.8f) + ((level * 2) / 0.8f));
-    regen = baseregen * (10 / (10 + vigor));
+    health = Mathf.RoundToInt(basehealth + ((vigor * 4f) / 0.8f) + ((level * 2) / 0.8f));
+    regen = baseregen * (10f / (10f + vigor));
     regenquant = Mathf.RoundToInt(0.02f + health * 0.012f);
     CritChance = 0.1f + ((0.1f * dexterity) / 2);
     CritMult = 1.5f + (dexterity * 0.05f);
@@ -239,7 +316,7 @@ public class PlayerController : MonoBehaviour
     //posição das mãos do personagem, conforme o item
     if (!Fishing)
     {
-      if (!weapon.CompareTag("Untagged") && !weapon.CompareTag("GoldOre") && !weapon.CompareTag("IronOre") && !weapon.CompareTag("Rock") && !weapon.CompareTag("IronBar") && !weapon.CompareTag("GoldBar") && !weapon.CompareTag("Arrow"))
+      if (!weapon.CompareTag("Untagged") && !weapon.CompareTag("GoldOre") && !weapon.CompareTag("IronOre") && !weapon.CompareTag("Rock") && !weapon.CompareTag("IronBar") && !weapon.CompareTag("GoldBar") && !weapon.CompareTag("Arrow") && !weapon.CompareTag("Fish") && !weapon.CompareTag("PufferFish") && !weapon.CompareTag("BlobFish") && !weapon.CompareTag("VileShard") && !weapon.CompareTag("Apple") && !weapon.CompareTag("RedRune") && !weapon.CompareTag("BlueRune") && !weapon.CompareTag("GreenRune") && !weapon.CompareTag("YellowRune"))
       {
         righth.transform.localPosition = new Vector3(-1.75f, -1.25f, 0);
       }
@@ -247,11 +324,11 @@ public class PlayerController : MonoBehaviour
       {
         righth.transform.localPosition = new Vector3(4, -2.5f, 0);
       }
-      if (weapon.CompareTag("GoldOre") || weapon.CompareTag("IronOre") || weapon.CompareTag("Rock") || weapon.CompareTag("IronBar") || weapon.CompareTag("GoldBar") || weapon.CompareTag("Arrow"))
+      if (weapon.CompareTag("GoldOre") || weapon.CompareTag("IronOre") || weapon.CompareTag("Rock") || weapon.CompareTag("IronBar") || weapon.CompareTag("GoldBar") || weapon.CompareTag("Arrow") || weapon.CompareTag("Fish") || weapon.CompareTag("PufferFish") || weapon.CompareTag("BlobFish") || weapon.CompareTag("VileShard") || weapon.CompareTag("Apple") || weapon.CompareTag("RedRune") || weapon.CompareTag("BlueRune") || weapon.CompareTag("GreenRune") || weapon.CompareTag("YellowRune"))
       {
         righth.transform.localPosition = new Vector3(1, -1, 0);
       }
-      if (weapon.CompareTag("Bow"))
+      if (weapon.CompareTag("Bow") || weapon.CompareTag("VileBow"))
       {
         lefth.transform.localPosition = new Vector3(-3.2f, -0.5f, 0);
         righth.transform.localPosition = new Vector3(1.75f, -3.75f, 0);
@@ -264,8 +341,12 @@ public class PlayerController : MonoBehaviour
     //botão de ação somente quando não estiver clicando em um menu ou arrastando um item
     if (Input.GetMouseButton(0) && !EventSystem.current.IsPointerOverGameObject() && !GameHandler.Drag)
     {
-      if (weapon.CompareTag(("Axe")))
+      if (weapon.CompareTag(("Axe")) || weapon.CompareTag("VilePickAxe"))
       {
+        if (canAxePick && !GameHandler.Audio.isPlaying)
+        {
+          GameHandler.Audio.PlayOneShot(Swing);
+        }
         anim.Blend("AxePick", 1);
         Collider2D[] hitTarget = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, AxeTargetLayers);
         foreach (Collider2D target in hitTarget)
@@ -286,13 +367,17 @@ public class PlayerController : MonoBehaviour
         {
           if (target != null && target.gameObject.CompareTag("Enemy"))
           {
-            if (canAttack == true) { StartCoroutine(AttackDelay(target, 1 + AxeDamage + Mathf.RoundToInt(strength / 2))); }
+            if (canAttack == true) { StartCoroutine(AttackDelay(target, 2 + Mathf.RoundToInt(strength / 2))); }
             return;
           }
         }
       }
-      if (weapon.CompareTag(("Pickaxe")))
+      if (weapon.CompareTag(("Pickaxe")) || weapon.CompareTag("VilePickAxe"))
       {
+        if (canAxePick && !GameHandler.Audio.isPlaying)
+        {
+          GameHandler.Audio.PlayOneShot(Swing);
+        }
         anim.Blend("AxePick", 1);
         Collider2D[] hitTarget = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, PickaxeTargetLayers);
         foreach (Collider2D target in hitTarget)
@@ -303,18 +388,34 @@ public class PlayerController : MonoBehaviour
             return;
           }
         }
-        Collider2D[] hitTarget2 = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, EnemyLayers);
-        foreach (Collider2D target in hitTarget2)
+        if (weapon.CompareTag("VilePickAxe"))
+        {
+          Collider2D[] hitTarget2 = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, CrystalLayer);
+          foreach (Collider2D target in hitTarget2)
+          {
+            if (target.GetType() == typeof(BoxCollider2D) && target != null)
+            {
+              if (canAxePick == true) { StartCoroutine(AxePickDelay(target)); }
+              return;
+            }
+          }
+        }
+        Collider2D[] hitTarget3 = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, EnemyLayers);
+        foreach (Collider2D target in hitTarget3)
         {
           if (target != null && target.gameObject.CompareTag("Enemy"))
           {
-            if (canAttack == true) { StartCoroutine(AttackDelay(target, 1 + PickaxeDamage + Mathf.RoundToInt(strength / 2))); }
+            if (canAttack == true) { StartCoroutine(AttackDelay(target, 2 + Mathf.RoundToInt(strength / 2))); }
             return;
           }
         }
       }
-      if (weapon.CompareTag("WoodenSword") || weapon.CompareTag("IronSword") || weapon.CompareTag("GoldenSword"))
+      if (weapon.CompareTag("WoodenSword") || weapon.CompareTag("IronSword") || weapon.CompareTag("VileSword") || weapon.CompareTag("SwordFish"))
       {
+        if (canAttack && !GameHandler.Audio.isPlaying)
+        {
+          GameHandler.Audio.PlayOneShot(Swing);
+        }
         anim.Blend("Sword", 1);
         Collider2D[] hitTarget = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, EnemyLayers);
         foreach (Collider2D target in hitTarget)
@@ -326,7 +427,7 @@ public class PlayerController : MonoBehaviour
           }
         }
       }
-      if (weapon.CompareTag("Bow"))
+      if (weapon.CompareTag("Bow") || weapon.CompareTag("VileBow"))
       {
         if (GameHandler.CheckItems(1, "Arrow"))
         {
@@ -337,6 +438,14 @@ public class PlayerController : MonoBehaviour
         {
           StartCoroutine(GameHandler.Message("No arrows!"));
         }
+      }
+      if (weapon.CompareTag("PufferFish"))
+      {
+        if (canBomb && !GameHandler.Audio.isPlaying)
+        {
+          GameHandler.Audio.PlayOneShot(Swing);
+        }
+        if (canBomb == true) { StartCoroutine(ThrowBomb()); }
       }
       if (weapon.CompareTag(("Untagged")))
       { //tentei alternar entre as mãos para socar mas tive problemas com o attack delay
@@ -354,6 +463,10 @@ public class PlayerController : MonoBehaviour
         // }
         // }
         // }
+        if (canAttack && !GameHandler.Audio.isPlaying)
+        {
+          GameHandler.Audio.PlayOneShot(Swing);
+        }
         anim.Blend("Punch1", 1);
         Collider2D[] hitTarget = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, EnemyLayers);
         foreach (Collider2D target in hitTarget)
@@ -380,6 +493,7 @@ public class PlayerController : MonoBehaviour
   { //dash conforme a direção pressionada ou local do mouse, instancia um rastro que some depois de 0.2sec
     if (Input.GetKeyDown(KeyCode.Space) && canDash && canDashWall)
     { //(WIP)>>adaptar para usuario poder mudar teclas
+      GameHandler.Audio.PlayOneShot(DashSound);
       StartCoroutine(DashDelay());
       GameObject dash = null;
       if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.D))
@@ -433,11 +547,10 @@ public class PlayerController : MonoBehaviour
     }
   }
   void Update()
-  { //drop de itens (atualmente no botão direito, mas se houver alguma ferramenta com uso secundario mudarei para o Q), pressionar shift faz com que drope enquanto o botão esteja pressionado
+  { //drop de itens
     if (!Fishing)
     {
-      if ((Input.GetMouseButtonDown(1)) && !EventSystem.current.IsPointerOverGameObject() && canDrop ||
-      (Input.GetMouseButton(1)) && (Input.GetKey(KeyCode.LeftShift)) && !EventSystem.current.IsPointerOverGameObject() && canDrop)
+      if (Input.GetMouseButtonDown(1) && !EventSystem.current.IsPointerOverGameObject() && canDrop)
       {
         canDrop = false;
         if (!weapon.CompareTag("Untagged"))
@@ -450,6 +563,7 @@ public class PlayerController : MonoBehaviour
               break;
             }
           }
+          GameHandler.Audio.PlayOneShot(Drop);
           Instantiate(Prefab, attackPoint.position, Quaternion.identity);
           SelectedSlot.transform.GetComponent<InventorySlot>().ItemCount--;
           //ClearSelected();
@@ -516,7 +630,6 @@ public class PlayerController : MonoBehaviour
         canScroll = true;
       }
     }
-
     if (!weapon.CompareTag("Rod"))
     {
       Fishing = false;
@@ -531,6 +644,67 @@ public class PlayerController : MonoBehaviour
     }
     if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject() && !GameHandler.Drag)
     {
+      if (weapon.CompareTag("VileShard"))
+      {
+        GameHandler.Audio.PlayOneShot(Success);
+        PlayerHealthBar.DmgText.GetPoint(gameObject.transform.position);
+        points++;
+        GameHandler.DestroyItem("VileShard", 1);
+      }
+      if (weapon.CompareTag("RedRune") || weapon.CompareTag("BlueRune") || weapon.CompareTag("GreenRune") || weapon.CompareTag("YellowRune"))
+      {
+        GameHandler.Audio.PlayOneShot(Swing);
+        anim.Blend("AxePick", 1);
+        Collider2D[] hitTarget = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, AltarLayer);
+        foreach (Collider2D target in hitTarget)
+        {
+          if (target != null && target.gameObject.CompareTag("Altar"))
+          {
+            GameHandler.Altar.AddRune(weapon.tag);
+            GameHandler.DestroyItem(weapon.tag, 1);
+          }
+        }
+      }
+      if (weapon.CompareTag("BlobFish"))
+      {
+        GameHandler.Audio.PlayOneShot(Success);
+        Instantiate(BlueRune, attackPoint.transform.position, Quaternion.identity);
+        GameHandler.DestroyItem("BlobFish", 1);
+      }
+      if (weapon.CompareTag("Fish") || weapon.CompareTag("Apple")) //cura com base na vida perdida
+      {
+        if (PlayerHealthBar.health < PlayerHealthBar.startingHealth)
+        {
+          if (PlayerHealthBar.health + Mathf.RoundToInt(((PlayerHealthBar.startingHealth - PlayerHealthBar.health) * 0.2f) + 10) < PlayerHealthBar.startingHealth)
+          {
+            if (weapon.CompareTag("Fish"))
+            {
+              GameHandler.DestroyItem("Fish", 1);
+            }
+            if (weapon.CompareTag("Apple"))
+            {
+              GameHandler.DestroyItem("Apple", 1);
+            }
+            PlayerHealthBar.DmgText.ShowHeal(gameObject.transform.position, Mathf.RoundToInt(((PlayerHealthBar.startingHealth - PlayerHealthBar.health) * 0.2f) + 10));
+            PlayerHealthBar.health += Mathf.RoundToInt(((PlayerHealthBar.startingHealth - PlayerHealthBar.health) * 0.2f) + 10);
+          }
+          else
+          {
+            if (weapon.CompareTag("Fish"))
+            {
+              GameHandler.Audio.PlayOneShot(Success);
+              GameHandler.DestroyItem("Fish", 1);
+            }
+            if (weapon.CompareTag("Apple"))
+            {
+              GameHandler.Audio.PlayOneShot(Success);
+              GameHandler.DestroyItem("Apple", 1);
+            }
+            PlayerHealthBar.DmgText.ShowHeal(gameObject.transform.position, Mathf.RoundToInt((PlayerHealthBar.startingHealth - PlayerHealthBar.health)));
+            PlayerHealthBar.health = PlayerHealthBar.startingHealth;
+          }
+        }
+      }
       if (weapon.CompareTag("Rod"))
       {
         Collider2D[] hitLake = Physics2D.OverlapCircleAll(transform.TransformPoint(attackPoint.localPosition + new Vector3(0.02f, 0.25f, 0)), 0.02f, LakeLayers);//posicao do anzol
@@ -538,6 +712,7 @@ public class PlayerController : MonoBehaviour
         {
           if (!Fishing && !anim.isPlaying)
           {
+            GameHandler.Audio.PlayOneShot(Swing);
             anim.Blend("FishThrow", 1);
             Fishing = true;
             StartCoroutine(Fish());
@@ -551,10 +726,18 @@ public class PlayerController : MonoBehaviour
             {
               hit = false;
               FishText.ShowText(gameObject, ":)", Color.green);
-              Instantiate(Prefabs[5], gameObject.transform.position + new Vector3(0.2f, 0, 0), Quaternion.identity);
+              GameHandler.Audio.PlayOneShot(Success);
+              exp += Mathf.RoundToInt(Random.Range(1f, 2f) * 8);
+              int fish = Random.Range(0, FishPrefabs.Count - 1);
+              Instantiate(FishPrefabs[fish], gameObject.transform.position - new Vector3(lookDir.normalized.x * 0.2f, lookDir.normalized.y * 0.2f, 0), Quaternion.identity);
+              if (fish >= 9)
+              { //index do blobfish
+                FishPrefabs.RemoveRange(9, 2);
+              }
             }
             else
             {
+              GameHandler.Audio.PlayOneShot(Error);
               FishText.ShowText(gameObject, ":(", Color.red);
             }
             return;
@@ -582,21 +765,29 @@ public class PlayerController : MonoBehaviour
   }
 
   void Inventory(int j)
-  { //seleciona o slot
-    if (SelectedSlot != GameObject.Find("GameHandler/Canvas/Inventory/Slots/Slot (" + j + ")"))
+  { //seleciona o slot 
+    if (SelectedSlot != inventory.transform.Find("Slots").transform.Find("Slot (" + j + ")").gameObject)
     {
       ClearSelected();
-      SelectedSlot = GameObject.Find("GameHandler/Canvas/Inventory/Slots/Slot (" + j + ")");
+      SelectedSlot = inventory.transform.Find("Slots").transform.Find("Slot (" + j + ")").gameObject;
     }
   }
 
   public static void ClearSelected()
   { //limpa a cor de seleção do slot anterior
-    foreach (Transform child in GameObject.Find("GameHandler/Canvas/Inventory/SlotImages").transform)
+    GameHandler GameHandler = GameObject.Find("GameHandler").GetComponent<GameHandler>();
+    foreach (Transform child in GameHandler.Inventory1.transform.Find("SlotImages").transform)
     {
       if (child.GetComponent<Image>().color == Color.yellow)
       {
         child.GetComponent<Image>().color = new Color32(160, 115, 90, 255);
+      }
+    }
+    foreach (Transform child in GameHandler.Inventory2.transform.Find("SlotImages").transform)
+    {
+      if (child.GetComponent<Image>().color == Color.yellow)
+      {
+        child.GetComponent<Image>().color = new Color32(190, 150, 130, 255);
       }
     }
   }

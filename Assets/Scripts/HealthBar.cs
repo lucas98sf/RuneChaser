@@ -6,6 +6,8 @@ using TMPro;
 
 public class HealthBar : MonoBehaviour
 {
+  public AudioClip Success;
+  public AudioClip TakeHit;
   private Transform bar;
   private TextMeshProUGUI text;
   public float health = 5;
@@ -16,10 +18,17 @@ public class HealthBar : MonoBehaviour
   public GameObject PlankPrefab;
   public GameObject GoldOrePrefab;
   public GameObject IronOrePrefab;
+  public GameObject YellowRunePrefab;
+  public GameObject VileShardPrefab;
+  public float VileShardChance;
   public EnemyController EnemyController;
   private Transform location;
   public DmgText DmgText;
+  [HideInInspector]
   public GameObject Player;
+  public bool hit;
+  public AudioClip Chop;
+  public AudioClip Mine;
 
   private void Start()
   {
@@ -56,6 +65,12 @@ public class HealthBar : MonoBehaviour
 
   void Update()
   {
+    if (gameObject.CompareTag("Enemy") && !hit)
+    {
+      startingHealth = health = gameObject.transform.parent.GetChild(0).GetComponent<EnemyController>().health;
+      bar.localScale = new Vector3(1, 1);
+      text.text = health.ToString() + "/" + startingHealth.ToString();
+    }
     if (health <= 0)
     {
       location.transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().color -= new Color(0, 0, 0, 255);
@@ -66,8 +81,13 @@ public class HealthBar : MonoBehaviour
       {
         gameObject.GetComponent<Animation>().Blend("EnemyDead", 1, 0);
         health = 0.01f;
-        DestroyImmediate(gameObject.GetComponentInChildren<BoxCollider2D>());
+        DestroyImmediate(gameObject.GetComponentInChildren<CircleCollider2D>());
         Destroy(gameObject.transform.parent.gameObject, 0.5f);
+        float chance = Random.value;
+        if (chance <= VileShardChance)
+        {
+          Instantiate(VileShardPrefab, gameObject.transform.position, transform.rotation);
+        }
         Player.GetComponent<PlayerController>().exp += Mathf.RoundToInt(Random.Range(1f, 2f) * 16);
       }
       else
@@ -77,10 +97,11 @@ public class HealthBar : MonoBehaviour
         DestroyImmediate(gameObject.GetComponent<BoxCollider2D>());
         Destroy(gameObject, 0.33f);
       }
+      //}
       if (gameObject.CompareTag("Tree"))
       { //para nao ficar instanciando enquanto reproduz a animação
         Instantiate(LogPrefab, gameObject.transform.position, transform.rotation);
-        Player.GetComponent<PlayerController>().exp += Mathf.RoundToInt(Random.Range(1f, 2f) * 2);
+        Player.GetComponent<PlayerController>().exp += Mathf.RoundToInt(Random.Range(1f, 2f) * 4);
         return;
       }
       if (gameObject.CompareTag("Log"))
@@ -91,35 +112,41 @@ public class HealthBar : MonoBehaviour
       }
       if (gameObject.CompareTag("GoldVein"))
       {
-        for (int i = 0; i <= Random.Range(1, 7); i++)
+        for (int i = 0; i <= Random.Range(2, 7); i++)
         { //quantidade aleatória
           if (i % 2 > 0)
           { //dividir entre minério e pedras
-            Instantiate(GoldOrePrefab, gameObject.transform.position + new Vector3(i / 10, (Random.Range(0, 5)) / 10, 0), transform.rotation); //locais diferentes
+            Instantiate(RockPrefab, gameObject.transform.position + new Vector3(Random.Range(-0.15f, 0.15f), i * 0.07f, 0), transform.rotation);
           }
           else
           {
-            Instantiate(RockPrefab, gameObject.transform.position + new Vector3(i / 10, (Random.Range(0, 5)) / 10, 0), transform.rotation);
+            Instantiate(GoldOrePrefab, gameObject.transform.position + new Vector3(Random.Range(-0.15f, 0.15f), i * 0.07f, 0), transform.rotation); //locais diferentes
           }
         }
-        Player.GetComponent<PlayerController>().exp += Mathf.RoundToInt(Random.Range(1f, 2f) * 16);
+        Player.GetComponent<PlayerController>().exp += Mathf.RoundToInt(Random.Range(1f, 2f) * 20);
         return;
       }
       if (gameObject.CompareTag("IronVein"))
       {
-        for (int i = 0; i <= Random.Range(1, 7); i++)
+        for (int i = 0; i <= Random.Range(2, 7); i++)
         {
           if (i % 2 > 0)
           {
-            Instantiate(IronOrePrefab, gameObject.transform.position + new Vector3(i / 10, (Random.Range(0, 5)) / 10, 0), transform.rotation);
+            Instantiate(RockPrefab, gameObject.transform.position + new Vector3(Random.Range(-0.15f, 0.15f), i * 0.07f, 0), transform.rotation);
           }
           else
           {
-            Instantiate(RockPrefab, gameObject.transform.position + new Vector3(i / 10, (Random.Range(0, 5)) / 10, 0), transform.rotation);
+            Instantiate(IronOrePrefab, gameObject.transform.position + new Vector3(Random.Range(-0.15f, 0.15f), i * 0.07f, 0), transform.rotation);
           }
         }
-        Player.GetComponent<PlayerController>().exp += Mathf.RoundToInt(Random.Range(1f, 2f) * 8);
+        Player.GetComponent<PlayerController>().exp += Mathf.RoundToInt(Random.Range(1f, 2f) * 10);
         return;
+      }
+      if (gameObject.CompareTag("Crystal"))
+      {
+        GameHandler.Audio.PlayOneShot(Success);
+        Instantiate(YellowRunePrefab, gameObject.transform.position, transform.rotation);
+        Player.GetComponent<PlayerController>().exp += Mathf.RoundToInt(Random.Range(1f, 2f) * 50);
       }
     }
   }
@@ -128,13 +155,23 @@ public class HealthBar : MonoBehaviour
   { //causa dano ao alvo
     if (gameObject.CompareTag("Enemy"))
     {
+      hit = true;
       DmgText.ShowText(transform.position, Mathf.RoundToInt(damage).ToString(), false, crit);
       EnemyController.triggered = true;
       gameObject.GetComponent<Animation>().Blend("GetHit", 1, 0);
+      GameHandler.Audio.PlayOneShot(TakeHit);
     }
     if (health > 0.01f)
     {
       health -= Mathf.RoundToInt(damage);
+    }
+    if (gameObject.CompareTag("Tree") || gameObject.CompareTag("Log"))
+    {
+      GameHandler.Audio.PlayOneShot(Chop);
+    }
+    if (gameObject.CompareTag("GoldVein") || gameObject.CompareTag("IronVein") || gameObject.CompareTag("Crystal"))
+    {
+      GameHandler.Audio.PlayOneShot(Mine);
     }
     percHealth = health / startingHealth;
     bar.localScale = new Vector3(percHealth, 1);

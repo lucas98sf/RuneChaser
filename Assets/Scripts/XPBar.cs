@@ -6,6 +6,7 @@ public class XPBar : MonoBehaviour
 {
   private Transform bar;
   private TextMeshProUGUI text;
+  [HideInInspector]
   public GameObject Player;
   public float baseexp;
   public float exp;

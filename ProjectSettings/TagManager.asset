@@ -28,10 +28,27 @@ TagManager:
   - Anvil
   - WoodenSword
   - IronSword
-  - GoldenSword
   - Stat
   - Rod
   - Arrow
+  - Fish
+  - Npc
+  - PufferFish
+  - Bomb
+  - BlobFish
+  - VileShard
+  - VilePickAxe
+  - VileSword
+  - VileBow
+  - Apple
+  - Undefined
+  - YellowRune
+  - GreenRune
+  - BlueRune
+  - RedRune
+  - Rune
+  - Altar
+  - SwordFish
   layers:
   - Default
   - TransparentFX
@@ -46,8 +63,8 @@ TagManager:
   - Veins
   - Enemies
   - Lakes
-  - 
-  - 
+  - Crystal
+  - Altar
   - 
   - 
   - 

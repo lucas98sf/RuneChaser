@@ -11,10 +11,19 @@ public class MainMenu : MonoBehaviour
   public GameObject mainmenu;
   public GameObject changecharacter;
   public GameObject display;
+  public GameObject quitconfirmation;
+  public GameObject help;
+  public GameObject options;
+  public static bool paused = false;
+  public GameObject Audio;
+  public AudioSource Music;
+  public Slider MusicVolume;
+  public Slider FXVolume;
 
   void Awake()
   {
     DontDestroyOnLoad(gameObject);
+    DontDestroyOnLoad(Audio);
   }
   public void GameStart()
   {
@@ -24,18 +33,31 @@ public class MainMenu : MonoBehaviour
   }
   public void GameContinue()
   {
+    Time.timeScale = 1f;
     gameObject.SetActive(false);
-    GameObject.Find("GameHandler").GetComponent<GameHandler>().cam.GetComponent<AudioListener>().enabled = true;
+    mainmenu.transform.GetChild(0).gameObject.SetActive(false);
+    mainmenu.transform.GetChild(1).gameObject.SetActive(true);
+    mainmenu.transform.GetChild(2).gameObject.SetActive(true);
   }
   public void ChangeCharacter()
   {
     changecharacter.SetActive(true);
     mainmenu.SetActive(false);
   }
+  public void Help()
+  {
+    help.SetActive(true);
+    mainmenu.SetActive(false);
+  }
+  public void Options()
+  {
+    options.SetActive(true);
+    mainmenu.SetActive(false);
+  }
   public void BackMenu()
   {
     mainmenu.SetActive(true);
-    changecharacter.SetActive(false);
+    EventSystem.current.currentSelectedGameObject.transform.parent.gameObject.SetActive(false);
   }
   public void ChangeColor() //muda a cor
   {
@@ -49,24 +71,19 @@ public class MainMenu : MonoBehaviour
   }
   public void Exit()
   {
+    quitconfirmation.SetActive(true);
+  }
+  public void YesQuit()
+  {
     Application.Quit();
   }
-
+  public void NoQuit()
+  {
+    quitconfirmation.SetActive(false);
+  }
   void FixedUpdate()
   {
-    if (SceneManager.GetSceneByName("Game").isLoaded)
-    {
-      mainmenu.transform.GetChild(0).gameObject.SetActive(true);
-      mainmenu.transform.GetChild(1).gameObject.SetActive(false);
-      mainmenu.transform.GetChild(2).gameObject.SetActive(false);
-    }
-    else
-    {
-      mainmenu.transform.GetChild(0).gameObject.SetActive(false);
-      mainmenu.transform.GetChild(1).gameObject.SetActive(true);
-      mainmenu.transform.GetChild(2).gameObject.SetActive(true);
-    }
-
+    Music.volume = MusicVolume.value;
     GameObject.Find("Display/Body").GetComponent<Image>().sprite = player.transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().sprite;
     GameObject.Find("Display/Body").GetComponent<Image>().color = player.transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().color;
 

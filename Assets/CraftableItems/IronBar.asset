@@ -19,7 +19,7 @@ MonoBehaviour:
   quantCrafted: 1
   position: {x: 0, y: -0.3, z: 0}
   NeededItems:
-  - quant: 3
+  - quant: 2
     item: IronOre
   - quant: 1
     item: Log

@@ -19,8 +19,10 @@ public class Stats : MonoBehaviour
   public float vigor;
   public float dexterity;
   public float swiftness;
+  [HideInInspector]
   public GameObject Player;
   private PlayerController player;
+  [HideInInspector]
   public GameObject Infos;
   void Start()
   {
@@ -60,7 +62,7 @@ public class Stats : MonoBehaviour
         Dexterity.transform.GetChild(1).GetComponent<Button>().interactable = true;
         Swiftness.transform.GetChild(1).GetComponent<Button>().interactable = true;
       }
-      Infos.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text = player.armor.ToString() + " (" + player.Resistance.ToString("0.00") + "% reduction)";
+      //Infos.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text = player.armor.ToString() + " (" + player.Resistance.ToString("0.00") + "% reduction)";
       Infos.transform.GetChild(1).GetChild(0).GetComponent<TextMeshProUGUI>().text = player.SwordDamage.ToString();
       Infos.transform.GetChild(2).GetChild(0).GetComponent<TextMeshProUGUI>().text = player.BowDamage.ToString();
       Infos.transform.GetChild(3).GetChild(0).GetComponent<TextMeshProUGUI>().text = (player.attackspeed * 1.25f).ToString("0.00") + " melee | " + player.attackspeed.ToString("0.00") + " ranged";

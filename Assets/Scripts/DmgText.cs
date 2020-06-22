@@ -19,10 +19,28 @@ public class DmgText : MonoBehaviour
   void Update() // texto de dano, com cores diferentes para player e enemy, e também em criticos
   {
     transform.position += new Vector3(0, speed, 0);
-    speed = 0.003f * (1 + Player.GetComponent<PlayerController>().attackspeed);
+    if (Player != null)
+    {
+      speed = 0.003f * (1 + Player.GetComponent<PlayerController>().attackspeed);
+    }
     GetComponent<TextMeshPro>().color -= new Color(0, 0, 0, 0.02f);
     Destroy(gameObject, duration); //duração determinada no inspector
   }
+
+  public void GetPoint(Vector3 pos)
+  {
+    text.text = "+1 point!";
+    text.color = Color.green;
+    Instantiate(gameObject, pos, Quaternion.identity);
+  }
+
+  public void ShowHeal(Vector3 pos, int heal)
+  {
+    text.text = heal.ToString();
+    text.color = Color.green;
+    Instantiate(gameObject, pos, Quaternion.identity);
+  }
+
   public void ShowText(Vector3 pos, string dmg, bool player, bool crit)
   {
     text.text = dmg;

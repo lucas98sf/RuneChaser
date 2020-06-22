@@ -47,6 +47,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -110,6 +111,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a00a61a022932646a0485f4206a4fa0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  items: []
 --- !u!1 &8517182480397987053
 GameObject:
   m_ObjectHideFlags: 0
@@ -156,6 +158,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed69fb2b9b7a41a4cb9d633195bf6013, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Sound: {fileID: 8300000, guid: ca3d2cd7e1e66274ea6f42422e816c92, type: 3}
 --- !u!61 &3614037254343354915
 BoxCollider2D:
   m_ObjectHideFlags: 0

@@ -6,11 +6,14 @@ using TMPro;
 public class PlayerHealthBar : MonoBehaviour
 {
   private Transform bar;
+  public AudioClip TakeHit;
   private TextMeshProUGUI text;
   [HideInInspector]
   public GameObject Player;
-  private float startingHealth;
-  private float health;
+  //[HideInInspector]
+  public float startingHealth;
+  //[HideInInspector]
+  public float health;
   private float regen;
   private float regenquant;
   private float percHealth = 1;
@@ -76,6 +79,7 @@ public class PlayerHealthBar : MonoBehaviour
   public void TakeDamage(float damage, bool crit)
   { //dano ao player
     Player.GetComponent<Animation>().Blend("GetHit", 1, 0);
+    GameHandler.Audio.PlayOneShot(TakeHit);
     health -= Mathf.RoundToInt(damage);
     DmgText.ShowText(Player.transform.position, Mathf.RoundToInt(damage).ToString(), true, crit);
   }

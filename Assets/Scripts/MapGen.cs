@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 public static class PoissonDiscSampling
 { //esta parte do codigo retirei de (https://github.com/SebLague/Poisson-Disc-Sampling/blob/master/Poisson%20Disc%20Sampling%20E01/PoissonDiscSampling.cs), é um script que gera pontos em uma área de forma que eles não se repitam dentro de uma área ao redor deles, para evitar que árvores e entre outros fiquem muito próximos.
@@ -81,7 +82,7 @@ public class MapGen : MonoBehaviour
   public Vector2 regionSize;
   public int rejectionSamples = 30;
   List<Vector2> Points;
-  [Header("Trees, Veins and Lakes")]
+  [Header("Trees, Veins, Lakes and Apples")]
   public float radiusSize;
   public GameObject TreePrefab;
   public float TreeChance;
@@ -89,6 +90,7 @@ public class MapGen : MonoBehaviour
   public float IronVeinChance;
   public GameObject GoldVeinPrefab;
   public float GoldVeinChance;
+  public GameObject ApplePrefab;
   public GameObject[] LakePrefabs;
   List<Vector2> Points2;
   [Header("Rocks and Sticks")]
@@ -101,11 +103,13 @@ public class MapGen : MonoBehaviour
   [Header("Enemies")]
   public float radiusSizeEnemies;
   public GameObject EnemyPrefab;
-
+  public Collider2D[] Colliders;
+  public Collider2D[] ColliderLakes;
+  public Collider2D[] SafeZone;
 
   void Awake()
   {
-    Points = PoissonDiscSampling.GeneratePoints(radiusSize, regionSize - new Vector2(-1, -1), rejectionSamples); //árvores minérios e lagos, com chances diferentes para cada
+    Points = PoissonDiscSampling.GeneratePoints(radiusSize, regionSize - new Vector2(-1, -1), rejectionSamples); //árvores minérios, lagos e maçãs, com chances diferentes para cada
     Points2 = PoissonDiscSampling.GeneratePoints(radiusSize2, regionSize, rejectionSamples); //sticks e rocks
     EnemiesPoints = PoissonDiscSampling.GeneratePoints(radiusSizeEnemies, regionSize, rejectionSamples); //inimigos
 
@@ -113,7 +117,7 @@ public class MapGen : MonoBehaviour
     {
       foreach (Vector2 point in Points)
       {
-        if (point.x >= 1 && point.x <= 99 && point.y >= 1 && point.y <= 99)
+        if (point.x >= 1 && point.x <= 99 && point.y >= 1 && point.y <= 99 && SpawnArea(Colliders, point))
         { //para não ficarem tão próximos à muralha
           float chance = Random.value;
           if (chance <= TreeChance)
@@ -134,7 +138,14 @@ public class MapGen : MonoBehaviour
               }
               else
               {
-                Instantiate(LakePrefabs[Random.Range(0, 3)], point, transform.rotation);
+                if (!SpawnArea(ColliderLakes, point))
+                {
+                  Instantiate(LakePrefabs[Random.Range(0, 3)], point, transform.rotation);
+                }
+                else
+                {
+                  Instantiate(ApplePrefab, point, transform.rotation);
+                }
               }
             }
           }
@@ -146,7 +157,7 @@ public class MapGen : MonoBehaviour
     {
       foreach (Vector2 point in Points2)
       {
-        if (point.x >= 1 && point.x <= 99 && point.y >= 1 && point.y <= 99)
+        if (point.x >= 1 && point.x <= 99 && point.y >= 1 && point.y <= 99 && SpawnArea(Colliders, point))
         {
           if (Random.value < RockChance)
           {
@@ -166,12 +177,36 @@ public class MapGen : MonoBehaviour
       {
         if (point.x >= 1 && point.x <= 99 && point.y >= 1 && point.y <= 99)
         {
-          if ((point.x < 43 || point.x > 57) && (point.y < 43 || point.y > 57))
+          if (SpawnArea(SafeZone, point))
           { //área segura, proximo ao spawn do player
             Instantiate(EnemyPrefab, point, transform.rotation);
           }
         }
       }
     }
+  }
+  public bool SpawnArea(Collider2D[] colliders, Vector3 pos) //checa se o ponto esta dentro de um collider para prevenir spawns em areas importantes, de https://www.youtube.com/watch?v=t2Cs71rDlUg
+  {
+
+    foreach (Collider2D c in colliders)
+    {
+      Vector3 centerPoint = c.bounds.center;
+      float width = c.bounds.extents.x;
+      float height = c.bounds.extents.y;
+
+      float leftExtent = centerPoint.x - width;
+      float rightExtent = centerPoint.x + width;
+      float lowerExtent = centerPoint.y - height;
+      float upperExtent = centerPoint.y + height;
+
+      if (pos.x >= leftExtent && pos.x <= rightExtent)
+      {
+        if (pos.y >= lowerExtent && pos.y <= upperExtent)
+        {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 }

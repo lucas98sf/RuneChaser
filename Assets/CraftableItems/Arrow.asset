@@ -15,7 +15,7 @@ MonoBehaviour:
   prefab: {fileID: 6395767964384294878, guid: 48b701f8341b4764d951e8910a2e4ec9, type: 3}
   needWorkbench: 0
   needFurnace: 0
-  needAnvil: 1
+  needAnvil: 0
   quantCrafted: 10
   position: {x: 0, y: 0.2, z: 0}
   NeededItems:
